@@ -1,3 +1,8 @@
+/* day06/SpotMarket/src/fetch.ts
+
+Fetch spot market data and wallet balances using Injective SDK
+
+*/
 import {
   ChainGrpcBankApi,
   IndexerGrpcSpotApi,

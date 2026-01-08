@@ -5,7 +5,8 @@
   "module": "true",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "fetch-spot": "ts-node src/fetch.ts"
+    "fetch-spot": "ts-node src/fetch.ts",
+    "place-order": "ts-node src/placeorder.ts"
   },
   "author": "",
   "license": "ISC",
