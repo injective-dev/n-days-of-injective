@@ -1,6 +1,6 @@
 # Day 1: Set up
 
-This is part on the N days of Injective series!
+This is part of the N days of Injective series!
 
 ## Pre-requisites
 
@@ -18,7 +18,7 @@ TODO
 
 - JSON is a data format
 - RPC is a communications protocol, think of it as a type of API
-- This is used in my types of apps, and is the de-facto means of client-server communications in EVM
+- This is used in many types of apps, and is the de-facto means of client-server communications in EVM
 - Where the client is the dApp or wallet, and the server is the blockchain node
 - Both the request and response are in JSON, so they are human readable
 
@@ -170,4 +170,4 @@ TODO
 ## Complete!
 
 Congratulations on completing this.
-Next up is day 2, where we will start with smart conbtracts!
+Next up is day 2, where we will start with smart contracts!
