@@ -54,6 +54,11 @@ TODO
   - Go to `https://iancoleman.io/bip39/`.
   - **Warning:** Explain that for real funds, you should never use an online generator. This is strictly for educational/testnet purposes.
   - Generate a 12-word mnemonic. Copy it.
+  - Scroll down further, and in the dropdown from "Coin", select "ETH - Ethereum"
+  - Scroll down much further, and you will see a heading "Derived Addresses", and a large table underneath it.
+  - These are all the accounts that can be generated from your seed phrase.
+  - From the 1st row, copy the **address**, **public key**, and **private key** values - these values taken together are going to be used as your account.
+  - Save these values in a text file - you will need them later.
 - **Step 2: Install Wallet.**
   - Ensure MetaMask is installed.
 - **Step 3: Import Wallet.**
@@ -68,6 +73,11 @@ TODO
   - Click "Approve" and then "Switch Network".
 - **Step 5: Verify.**
   - Open MetaMask again. You should see "Injective EVM Testnet" selected at the top.
+
+> Note that this is an **extremely insecure** way of dealing with seed phrases and private keys.
+> This method is **not recommended** for actual use with real wallets, real cryptocurrency, or real tokens.
+> This is is **only** suitable for test wallets, test cryptocurrency, or test tokens.
+> In other words, only use this method on Testnet (or similar); and use a more secure method on Mainnet.
 
 ## Claim Testnet INJ for transactions from a faucet (demo)
 
