@@ -378,4 +378,11 @@ and how to develop smart contracts.
 ## Complete!
 
 Congratulations on completing this.
-Next up is day 3, where we will use the smart contract that we have developed and build a dApp.
+Next up is day 3, where we will use the smart contract that we have developed here,
+and build a dApp with it.
+
+> Injective is a blockchain with a MultiVM architecture.
+> In addition to EVM smart contracts,
+> [CosmWasm smart contracts](https://docs.injective.network/developers-cosmwasm/smart-contracts)
+> are also supported.
+> However, these will not be covered in this course.
