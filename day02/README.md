@@ -352,4 +352,4 @@ and how to develop smart contracts.
 ## Complete!
 
 Congratulations on completing this.
-Next up is day 2, where we will start with smart contracts!
+Next up is day 3, where we will use the smart contract that we have developed and build a dApp.
