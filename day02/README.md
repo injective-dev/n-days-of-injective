@@ -82,6 +82,32 @@ Let's take a quick tour of the project structure in `day02/src`. This is a stand
 - `test/`: This is where our test files are located.
 - `script/`: This is where our deployment script is are located.
 
+Before we begin, be sure to obtain the private key from an account that you created earlier,
+and save that in the `.env` file.
+Start by copying the example file.
+
+```shell
+cd src
+cp .example.env .env
+```
+
+Next, edit the `.env` file.
+Ensure that you replace `your private key without 0x prefix` with
+(you guessed it!) your private key without the `0x` prefix.
+
+```shell
+PRIVATE_KEY=your private key without 0x prefix
+INJ_TESTNET_RPC_URL=https://k8s.testnet.json-rpc.injective.network/
+```
+
+> You should already have a private key from day 1 for set up.
+> If you do not, please review the steps in the
+> "EVM wallet and connect to Injective Testnet" section.
+
+This will allow you to use the account that you have previously created
+and funded with Testnet INJ to pay for transactions.
+More on that later!
+
 ## Overview of smart contract development steps
 
 Before we run commands, let's visualize the workflow. Smart contract development usually follows this cycle:
