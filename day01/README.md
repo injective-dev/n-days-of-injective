@@ -4,7 +4,8 @@ This is part of the N days of Injective series!
 
 ## Pre-requisites
 
-TODO
+- Basic knowledge of: Javascript programming, and command line usage
+- Software installed: Chrome browser, NodeJs
 
 ## What is JSON-RPC?
 
