@@ -11,9 +11,6 @@ By the end of this repo, you should be able to start a local Injective node, con
 
 - How to run an Injective node locally
 - How the Injective blockchain is initialized and started
-- How to connect to a local node using RPC and gRPC
-- How to query chain state and submit basic transactions
-- How local node interaction differs from testnet and mainnet
 
 ---
 
@@ -33,12 +30,7 @@ Before getting started, make sure you have the following installed:
 
 ```text
 .
-├── node/
-│   ├── config/            # Node configuration files
-│   └── scripts/           # Scripts to start and manage the local node
-├── client/
-│   ├── sdk/               # Examples using Injective SDK
-│   └── rpc/               # RPC and gRPC interaction examples
+├── setup.sh
 ├── README.md
 
 ```
