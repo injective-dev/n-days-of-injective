@@ -81,7 +81,7 @@ Copy-paste the smart contract deployed address from day 2 (smart contracts) as t
 Now, how do we access the user's wallet?
 When you install a browser extension wallet such as MetaMask,
 it *injects* a global object.
-It is accesible as `window.ethereum` within the browser's Javascript environement.
+It is accessible as `window.ethereum` within the browser's Javascript environment.
 
 We're going to take that object and pass it into `viem`'s `createWalletClient`.
 This creates a `client` instance that acts as our main interface.
@@ -111,7 +111,7 @@ We'll use two main methods provided by viem:
 
 Remember, read operations are free and instant.
 Write operations change the blockchain state, costs gas.
-Therefore write operations require a siged transaction,
+Therefore write operations require a signed transaction,
 whereas read operations do not.
 
 ## Provider, ABI, and deployed address
@@ -193,7 +193,7 @@ it's free, and you don't need permission or a signature.
 
 Write operations are different from read operations,
 because you are updating the blockchain state.
-You need to sign the transaction using a wallet it to prove it is authorised you.
+You need to sign the transaction using a wallet to prove it is authorised you.
 You also pay a small fee (known as gas) to the network.
 The gas fee is needed to compensate for the space and processing power
 used to update the blockchain state.
