@@ -1,11 +1,10 @@
-import { createWalletClient, custom } from 'viem';
+import { createWalletClient, custom, publicActions } from 'viem';
 import { injectiveTestnet } from 'viem/chains';
 
 console.log(injectiveTestnet);
 
-const smartContractDetails = await getJson('/api/smart-contract');
-console.log(smartContractDetails);
-const { rpc, address, abi } = smartContractDetails;
+const stateSmartContract = await getJson('/api/smart-contract');
+console.log(stateSmartContract);
 
 const btnWallet = document.querySelector('#btnWallet');
 const txtWallet = document.querySelector('#txtWallet');
@@ -30,9 +29,14 @@ const txtRead = document.querySelector('#txtRead');
 let stateRead = {
     n: 0,
 };
-btnRead.addEventListener('click', (_event) => {
-    stateRead.n += 1;
-    txtRead.innerHTML = `btnRead clicked: ${stateRead.n}`;
+btnRead.addEventListener('click', async (_event) => {
+    const result = await stateWallet.client.readContract({
+        address: stateSmartContract.address,
+        abi: stateSmartContract.abi,
+        functionName: 'value',
+        // account,
+    });
+    txtRead.innerHTML = `Result: ${result}`;
 });
 
 const btnWrite = document.querySelector('#btnWrite');
@@ -67,7 +71,7 @@ async function connectEvmWallet() {
         client = createWalletClient({
             chain: injectiveTestnet,
             transport: custom(window.ethereum),
-        });
+        }).extend(publicActions);
     } catch (ex) {
         return {
             ok: false,
