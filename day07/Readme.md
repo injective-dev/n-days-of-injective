@@ -20,9 +20,7 @@ Before getting started, make sure you have the following installed:
 
 - Go (version compatible with Injective)
 - Docker and Docker Compose
-- Node.js (for SDK based interaction)
 - Git
-- Basic understanding of blockchains and Cosmos SDK concepts
 
 ---
 
@@ -42,8 +40,6 @@ This guide will help new users set up and run an Injective node using the provid
 
 ### Prerequisites
 - macOS or Linux environment (tested on macOS)
-- Bash and `expect` installed
-- Node.js and npm installed (for SDK usage)
 - Docker (optional, for isolated environments)
 
 ### Steps to Run Injective Node
@@ -68,7 +64,7 @@ This guide will help new users set up and run an Injective node using the provid
    ./setup.sh
    ```
    - The script will:
-     - Import keys using mnemonics (with `expect` for interactive prompts)
+     - Import keys using mnemonics
      - Allocate genesis accounts for all users and validators
      - Set up the genesis file and sign the genesis transaction
 
@@ -78,7 +74,15 @@ This guide will help new users set up and run an Injective node using the provid
      ```sh
      injectived start
      ```
-
+     
+6. **Interact with your local network**
+   - Open another terminal, run command to check your local network state
+   - Refer to day05 for more `injectived` examples
+   ```sh
+   injectived query bank balances \
+   ${inj-prefix-wallet-address} \
+   --chain-id injective-1
+   ```
 ### Troubleshooting
 - If you encounter permission errors, ensure you have execution rights on the script.
 - If `injectived` is not found, ensure it is installed and available in your PATH.
@@ -86,8 +90,6 @@ This guide will help new users set up and run an Injective node using the provid
 
 ### Additional Resources
 - See the official Injective documentation for advanced configuration: https://docs.injective.network/
-- For SDK usage, check the `sdk/` folder and its README.
-
 ---
 
 
