@@ -45,7 +45,7 @@ and not to some other EVM network.
 
 This configuration includes things like the Chain ID and the RPC URL.
 
-Copy the ABI file generated during the compilation of the smart contract from day 2 (smart conbtracts) into the `public` dir of within this project.
+Copy the ABI file generated during the compilation of the smart contract from day 2 (smart contracts) into the `public` dir of within this project.
 ```shell
 cp ../day02/smart-contract/artifacts/contracts/Counter.sol/Counter.json ./front/public/counter.abi.json
 ```
@@ -68,7 +68,7 @@ SC_ABI=
 Set the value of `SC_ABI` to `counter.abi.json`
 (the file you have just copied into the `public` directory.)
 
-Copy-paste the smart contract deployed address from day 2 (smart contracts) as the `SC_ADRESS` value.
+Copy-paste the smart contract deployed address from day 2 (smart contracts) as the `SC_ADDRESS` value.
 
 > You should already have the smart contract's deployed address and ABI
 > from day 2 for smart contracts.
@@ -193,7 +193,7 @@ it's free, and you don't need permission or a signature.
 
 Write operations are different from read operations,
 because you are updating the blockchain state.
-You need to sign the transaction using a wallet to prove it is authorised you.
+You need to sign the transaction using a wallet to prove it is authorised by you.
 You also pay a small fee (known as gas) to the network.
 The gas fee is needed to compensate for the space and processing power
 used to update the blockchain state.
