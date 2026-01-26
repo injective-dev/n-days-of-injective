@@ -36,7 +36,9 @@ btnRead.addEventListener('click', async (_event) => {
         functionName: 'value',
         // account,
     });
+    stateRead.n += 1;
     txtRead.innerHTML = `Result: ${result}`;
+    console.log(`Read operations count: ${stateRead.n}.`);
 });
 
 const btnWrite = document.querySelector('#btnWrite');
@@ -44,9 +46,20 @@ const txtWrite = document.querySelector('#txtWrite');
 let stateWrite = {
     n: 0,
 };
-btnWrite.addEventListener('click', (_event) => {
+btnWrite.addEventListener('click', async (_event) => {
+    const hash = await stateWallet.client.writeContract({
+        address: stateSmartContract.address,
+        abi: stateSmartContract.abi,
+        functionName: 'increment',
+        args: [2n],
+        account: stateWallet.address,
+    });
+    const blockExplorerUrl = `https://testnet.blockscout.injective.network/tx/${hash}`;
+    const hashDisplay = `${hash.substring(0, 12)}...`;
+    txtWrite.innerHTML =
+        `<p><span>Transaction submitted:</span><a href="${blockExplorerUrl}">${hashDisplay}</a></p>`;
     stateWrite.n += 1;
-    txtWrite.innerHTML = `btnWrite clicked: ${stateWrite.n}`;
+    console.log(`Write operations count: ${stateWrite.n}.`);
 });
 
 async function getJson(url) {
