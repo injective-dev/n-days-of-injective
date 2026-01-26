@@ -19,10 +19,11 @@ By the end of this repo, you should be able to start a local Injective node, con
 Before getting started, make sure you have the following installed:
 
 - Go (version compatible with Injective)
-- Docker and Docker Compose
+- Docker
 - Git
 
 ---
+Note: if you finihsed day05, your enviorment are all set.
 
 ## Repository Structure
 
@@ -36,11 +37,11 @@ Before getting started, make sure you have the following installed:
 
 ## Guide: Running an Injective Node with setup.sh
 
-This guide will help new users set up and run an Injective node using the provided `setup.sh` script in this repository.
+This guide will help new users set up and run an Injective node using the provided `setup.sh` script in this repository. In this guide, a docker version of script will be used, if your platform support Linux, you can follow the guide from Injective doc: https://docs.injective.network/infra/join-a-network.
 
 ### Prerequisites
 - macOS or Linux environment (tested on macOS)
-- Docker (optional, for isolated environments)
+- Docker
 
 ### Steps to Run Injective Node
 
@@ -74,7 +75,7 @@ This guide will help new users set up and run an Injective node using the provid
      ```sh
      injectived start
      ```
-     
+
 6. **Interact with your local network**
    - Open another terminal, run command to check your local network state
    - Refer to day05 for more `injectived` examples
@@ -83,10 +84,11 @@ This guide will help new users set up and run an Injective node using the provid
    ${inj-prefix-wallet-address} \
    --chain-id injective-1
    ```
+
 ### Troubleshooting
 - If you encounter permission errors, ensure you have execution rights on the script.
-- If `injectived` is not found, ensure it is installed and available in your PATH.
 - For mnemonic/key errors, double-check the values in `setup.sh`.
+- If you can not interact with your local node, check your docker instance not stopped.
 
 ### Additional Resources
 - See the official Injective documentation for advanced configuration: https://docs.injective.network/
