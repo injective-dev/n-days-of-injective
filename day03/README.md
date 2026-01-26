@@ -12,7 +12,7 @@ Welcome back to day 3!
 If you followed along with Day 2, you should already have the repository cloned.
 If not, pause here and complete day 2 before resuming.
 
-Today, simply need to `cd` into the `day03` directory.
+Today, you simply need to `cd` into the `day03` directory.
 Open up your terminal and let's navigate there.
 
 ```shell
@@ -45,6 +45,37 @@ and not to some other EVM network.
 
 This configuration includes things like the Chain ID and the RPC URL.
 
+Copy the ABI file generated during the compilation of the smart contract from day 2 (smart conbtracts) into the `public` dir of within this project.
+```shell
+cp ../day02/smart-contract/artifacts/contracts/Counter.sol/Counter.json ./front/public/counter.abi.json
+```
+
+Make a new `.env` file by copying the sample one.
+
+```shell
+cp .example.env .env
+```
+
+Edit the `.env` file, which will start off looking like this:
+
+```text
+PORT=3690
+RPC_URL=https://k8s.testnet.json-rpc.injective.network/
+SC_ADDRESS=
+SC_ABI=
+```
+
+Set the value of `SC_ABI` to `counter.abi.json`
+(the file you have just copied into the `public` directory.)
+
+Copy-paste the smart contract deployed address from day 2 (smart contracts) as the `SC_ADRESS` value.
+
+> You should already have the smart contract's deployed address and ABI
+> from day 2 for smart contracts.
+> If you do not, please review the steps in the
+> "Compile Solidity with solc" section, and the
+> "Deploy EVM bytecode to blockchain" section.
+
 ## Inject web3 provider (demo)
 
 Now, how do we access the user's wallet?
@@ -57,7 +88,17 @@ This creates a `client` instance that acts as our main interface.
 Through this client, we can ask the user to sign transactions and read data from the chain.
 It is the handshake between our website and the user's funds.
 
-## Connect to smart contract (demo)
+See the implementation of `connectEvmWallet()` in `front/public/index.js`.
+The relevant code using viem is:
+
+```js
+client = createWalletClient({
+    chain: injectiveTestnet,
+    transport: custom(window.ethereum),
+}).extend(publicActions);
+```
+
+## Connect to smart contract
 
 We have a `client` object, which broadly allows your dApp to communicate with Injective Testnet.
 Next we need to talk to our specific `Counter` smart contract that we deployed in day 2.
@@ -88,6 +129,9 @@ into the binary representation used by the EVM.
 Conversely, it tells our dApp how to decode the binary response from the EVM
 back into readable JavaScript types.
 
+In our example, in `front/server.js`, we see that `GET` requests made to `/api/smart-contract`
+return both the address and the ABI of the smart contract that were prepared earlier.
+
 ## Query user interface (demo)
 
 Let's hook this up to the user interface.
@@ -100,6 +144,17 @@ Since this is just a query, it's fast.
 We get the number back and immediately display it in this text field.
 Notice that no wallet popup appears.
 Reading public data doesn't require user permission.
+
+See the implementation in `front/public/index.js`.
+The relevant code using viem is:
+
+```js
+const result = await stateWallet.client.readContract({
+    address: stateSmartContract.address,
+    abi: stateSmartContract.abi,
+    functionName: 'value',
+});
+```
 
 ## Update user interface (demo)
 
@@ -115,6 +170,19 @@ Once the user signs, we get a transaction hash.
 
 We'll display this hash as a link to the Injective Explorer
 so the user can verify their transaction went through.
+
+See the implementation in `front/public/index.js`.
+The relevant code using viem is:
+
+```js
+const hash = await stateWallet.client.writeContract({
+    address: stateSmartContract.address,
+    abi: stateSmartContract.abi,
+    functionName: 'increment',
+    args: [2n],
+    account: stateWallet.address,
+});
+```
 
 ## Read and write operations
 

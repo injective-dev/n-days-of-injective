@@ -34,7 +34,6 @@ btnRead.addEventListener('click', async (_event) => {
         address: stateSmartContract.address,
         abi: stateSmartContract.abi,
         functionName: 'value',
-        // account,
     });
     stateRead.n += 1;
     txtRead.innerHTML = `Result: ${result}`;
