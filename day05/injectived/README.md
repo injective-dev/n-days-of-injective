@@ -54,7 +54,7 @@ docker run -it --rm injectivelabs/injective-core:v1.17.1 injectived version
 If this succeeds, create alias to simplify commands
 
 ```bash
-alias injectived='docker run -it --rm -v ~/.injective:/root/.injective injectivelabs/injective-core:v1.17.1 injectived --home /root/.injective'
+alias injectived='docker run -it --rm -v ~/.injectived:/root/.injectived injectivelabs/injective-core:v1.17.1 injectived --home /root/.injectived'
 ```
 
 > Note that this alias pertain to your *current shell session* only.
@@ -66,7 +66,7 @@ alias injectived='docker run -it --rm -v ~/.injective:/root/.injective injective
 
 ```bash
 git clone https://github.com/InjectiveFoundation/injective-core.git
-cd injective-core && git checkout v1.14.1
+cd injective-core && git checkout v1.17.1
 make install
 ```
 
