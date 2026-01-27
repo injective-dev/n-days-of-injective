@@ -1,10 +1,10 @@
-# Day 2: Smart Contract Basics
+# Day 2: Smart Contracts
 
 This is part of the N days of Injective series!
 
 ## Pre-requisites
 
-TODO
+- Completed day 1 (set up) in this series
 
 ## What is a smart contract?
 
@@ -74,6 +74,12 @@ Once cloned, `cd` into the `day02` directory.
 ```shell
 cd n-days-of-injective
 cd day02
+```
+
+Also, we'll need to install the dependencies.
+
+```shell
+npm install
 ```
 
 Let's take a quick tour of the project structure in `day02/src`. This is a standard Hardhat project.
