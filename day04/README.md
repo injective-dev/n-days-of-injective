@@ -15,7 +15,7 @@ We will be building a token that's both EVM and Cosmos compatible today!
 If you are joining us from day 2, you're all set.
 If not, please check the prerequisites.
 Let's get started!
-Open your terminal and navigate to the `day04` directory within this repo.
+Open the terminal and navigate to the `day04` directory within this repo.
 This will be our workspace for exploring the MultiVM Token Standard (MTS).
 
 ```shell
@@ -28,8 +28,8 @@ Also, we'll need to install the dependencies.
 npm install
 ```
 
-You will need to set up a `.env` file here too.
-The easiest way to do so would be to copy the one that you already have from the day 2 repo.
+We will need to set up a `.env` file here too.
+The easiest way to do so would be to copy the one that we already have from the day 2 repo.
 
 ```shell
 cp ../../day02/smart-contract/.env ./.env
@@ -51,12 +51,12 @@ More than enough for most operations, but insufficient to deploy an MTS token.
 Fortunately we have another faucet provided by Google,
 that is far more generous, dispensing 10INJ at a time.
 To use that, we need to be signed in - that's their DDOS protection.
-From the Injective Faucet, copy your wallet's address -
+From the Injective Faucet, copy our wallet's address -
 the one that starts with `inj...` -
 and paste it into Google's Injective Testnet Faucet.
 Press then button, and wait for the transaction to come through.
-Check your wallet.
-You should now have more than enough for an MTS deployment.
+Check our wallet.
+We should now have more than enough for an MTS deployment.
 
 ## EVM precompiles
 
@@ -64,9 +64,9 @@ First, we need to understand what EVM Precompiles are on Injective.
 These are *not* standard smart contracts.
 They are native code embedded directly into the Injective nodes themselves.
 We expose this native implementation to the EVM through specific addresses and ABIs.
-When you interact with these addresses within your EVM smart contract,
-you are *not* running EVM bytecode.
-Instead, you're triggering native Injective logic.
+When we interact with these addresses within our EVM smart contract,
+we are *not* running EVM bytecode.
+Instead, we are triggering native Injective logic.
 Think of it like a Foreign Function Interface (FFI).
 This allows our smart contracts written in Solidity to 'speak' directly to
 the core blockchain modules within Injective,
@@ -85,12 +85,12 @@ some other conversion or equivalence translation mechanism.
 Injective takes a different approach.
 With MTS, a fungible token is the *same* underlying asset across all VMs.
 It is simultaneously an ERC20 token and a Cosmos Denom.
-This means you can use both Metamask (an EVM wallet) and Keplr (a Cosmos wallet)
+This means we can use both Metamask (an EVM wallet) and Keplr (a Cosmos wallet)
 to manage the exact same asset without any conversion steps.
 
 ## Bank module + interface
 
-How do you create an MTS token?
+How do we create an MTS token?
 The magic happens via the Bank module Precompile.
 It lives at this specific address ending in `64`: `0x0000000000000000000000000000000000000064`.
 Its interface looks similar to ERC20, with transfer and balance functions.
@@ -160,7 +160,7 @@ And it routes balance related updates, like transfer/ mint/ burn, through to the
    }
 ```
 
-To make your own MTS token, you just extend this contract.
+To make our own MTS token, we just extend this contract.
 It's that simple.
 
 ```solidity
@@ -174,7 +174,7 @@ contract MyMtsToken is BankERC20 {
 
 The `BankERC20` constructor gets invoked, which will set the metadata.
 
-What is left for you to do within this smart contract is to mint the initial supply.
+What is left for us to do within this smart contract is to mint the initial supply.
 For example:
 
 ```solidity
@@ -184,7 +184,7 @@ For example:
 ## MTS transfer with EVM transaction (demo)
 
 Time for a demo.
-I'm going to compile our MTS token.
+Let's going to compile our MTS token.
 
 ```shell
 npx hardhat compile
@@ -193,7 +193,7 @@ npx hardhat compile
 Next, deploy the MTS token.
 Edit the constructor arguments, which will be used in the deployment transaction, in this file:
 `script/constructor-args-mymtstoken.js`.
-You will need to set a name, symbol, and total supply for the MTS token.
+We will need to set a name, symbol, and total supply for the MTS token.
 For example:
 
 ```js
@@ -207,7 +207,7 @@ module.exports = [
 ];
 ```
 
-Then the deployment command, which will pick up the values that you have set in the file above.
+Then the deployment command, which will pick up the values that we have set in the file above.
 
 ```shell
 npx hardhat run script/deploy.js --network inj_testnet
@@ -219,9 +219,9 @@ Finally, verify the MTS token.
 npx hardhat verify --constructor-args ./script/constructor-args-mymtstoken.js --network inj_testnet ${SMART_CONTRACT_ADDRESS}
 ```
 
-Going back to the deployment, I'll grab the address and add it to my Metamask wallet.
-You can see it behaves exactly like a standard EVM ERC20 token would, within Metamask.
-Now, I'll transfer some tokens to another wallet.
+Going back to the deployment, let's grab the address and add it to our Metamask wallet.
+We can see it behaves exactly like a standard EVM ERC20 token would, within Metamask.
+Now, let's transfer some tokens to another wallet.
 This transaction is signed by Metamask, and processed by the EVM.
 But the actual transfer of units of the fungible token
 occurs as a Bank module action within in the Injective node.
@@ -230,10 +230,10 @@ EVM in this case, provides the interface, but not the implementation.
 ## Check MTS balances (demo)
 
 Finally, let's check the transfer transaction via the block explorer.
-I'll query the `balanceOf` function for both wallets.
-First `balanceOf` for my own wallet.
+Let's query the `balanceOf` function for both wallets.
+First `balanceOf` for our own wallet.
 Next `balanceOf` for the other wallet of the recipient.
-Observe that my balance has decreased, and the recipient's balance has increased.
+Observe that our balance has decreased, and the recipient's balance has increased.
 We've successfully used an EVM ERC20 and Cosmos Denom simultaneously,
 without actually bridging, wrapping etc.
 
