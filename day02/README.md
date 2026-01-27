@@ -76,6 +76,12 @@ cd n-days-of-injective
 cd day02
 ```
 
+Also, we'll need to install the dependencies.
+
+```shell
+npm install
+```
+
 Let's take a quick tour of the project structure in `day02/src`. This is a standard Hardhat project.
 - `contracts/`: This is where our Solidity smart contract lives.
 - `artifacts/`: This is where the compiled build outputs will go.
