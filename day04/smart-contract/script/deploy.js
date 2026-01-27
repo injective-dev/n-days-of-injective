@@ -1,13 +1,29 @@
-async function main() {
-    const Counter = await ethers.getContractFactory('Counter');
-    const counter = await Counter.deploy({
-        gasPrice: 160e6,
-        gasLimit: 2e6,
-    });
-    await counter.waitForDeployment();
-    const address = await counter.getAddress();
+const constructorArgsMyMtsToken = require('./constructor-args-mymtstoken.js');
 
-    console.log('Counter smart contract deployed to:', address);
+async function deploy(name, constructorArgs, deployTxOptions) {
+    const smartContractFatory =
+        await ethers.getContractFactory(name);
+    const smartContractInstance =
+        await smartContractFatory.deploy(...constructorArgs, deployTxOptions);
+    await smartContractInstance.waitForDeployment();
+    const smartContractAddress =
+        await smartContractInstance.getAddress();
+
+    console.log(
+        `Smart contract deployed: ${smartContractAddress} - ${name}\n.   https://testnet.blockscout.injective.network/address/${smartContractAddress}?tab=contract`,
+    );
+}
+
+async function main() {
+    await deploy('MyMtsToken',
+        constructorArgsMyMtsToken,
+        {
+            // Pay 1INJ (1e18inj) as the initial mint fee register a new MTS token
+            value: 1_000_000_000_000_000_000n,
+            gasPrice: 160e6,
+            gasLimit: 2e6,
+        },
+    );
 }
 
 main()
