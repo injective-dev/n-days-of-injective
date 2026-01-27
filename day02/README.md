@@ -1,10 +1,10 @@
-# Day 2: Smart Contract Basics
+# Day 2: Smart Contracts
 
 This is part of the N days of Injective series!
 
 ## Pre-requisites
 
-TODO
+- Completed day 1 (set up) in this series
 
 ## What is a smart contract?
 
