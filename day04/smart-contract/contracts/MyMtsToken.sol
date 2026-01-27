@@ -14,15 +14,15 @@ contract MyMtsToken is BankERC20 {
     /// - Fixed total supply, for which minimum is 1 full unit (see decimal places).
     /// - All units are allocated to the deployer account.
     /// - Decimal places is 18.
-    /// @param name_ Token token name
-    /// @param symbol_ Token token symbol
+    /// @param name_ Token name
+    /// @param symbol_ Token symbol
     /// @param supply_ Token total fixed supply
     constructor(
         string memory name_,
         string memory symbol_,
         uint256 supply_
     ) payable BankERC20(name_, symbol_, 18) {
-        require(supply_ >= 1 ** 18, "under minimum supply");
+        require(supply_ >= 10 ** 18, "under minimum supply");
         _mint(msg.sender, supply_);
     }
 }

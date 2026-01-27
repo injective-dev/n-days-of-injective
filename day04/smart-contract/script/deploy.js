@@ -1,16 +1,16 @@
 const constructorArgsMyMtsToken = require('./constructor-args-mymtstoken.js');
 
 async function deploy(name, constructorArgs, deployTxOptions) {
-    const smartContractFatory =
+    const smartContractFactory =
         await ethers.getContractFactory(name);
     const smartContractInstance =
-        await smartContractFatory.deploy(...constructorArgs, deployTxOptions);
+        await smartContractFactory.deploy(...constructorArgs, deployTxOptions);
     await smartContractInstance.waitForDeployment();
     const smartContractAddress =
         await smartContractInstance.getAddress();
 
     console.log(
-        `Smart contract deployed: ${smartContractAddress} - ${name}\n.   https://testnet.blockscout.injective.network/address/${smartContractAddress}?tab=contract`,
+        `Smart contract deployed: ${smartContractAddress} - ${name}\n    https://testnet.blockscout.injective.network/address/${smartContractAddress}?tab=contract`,
     );
 }
 

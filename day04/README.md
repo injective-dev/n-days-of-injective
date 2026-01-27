@@ -48,7 +48,7 @@ and thus needs a lot of protection against DDOS -
 which unfortunately means the amount it dispenses is relatively low.
 More than enough for most operations, but insufficient to deploy an MTS token.
 
-Fortunately we have another facuet provided by Google,
+Fortunately we have another faucet provided by Google,
 that is far more generous, dispensing 10INJ at a time.
 To use that, we need to be signed in - that's their DDOS protection.
 From the Injective Faucet, copy your wallet's address -
@@ -190,12 +190,6 @@ I'm going to compile our MTS token.
 npx hardhat compile
 ```
 
-Next, run the tests.
-
-```shell
-npx hardhat test
-```
-
 Next, deploy the MTS token.
 Edit the constructor arguments, which will be used in the deployment transaction, in this file:
 `script/constructor-args-mymtstoken.js`.
@@ -213,7 +207,7 @@ module.exports = [
 ];
 ```
 
-Then the deployment command, whcih will pick up the values that you have set in the file above.
+Then the deployment command, which will pick up the values that you have set in the file above.
 
 ```shell
 npx hardhat run script/deploy.js --network inj_testnet
