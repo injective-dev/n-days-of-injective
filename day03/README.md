@@ -54,7 +54,7 @@ This configuration includes things like the Chain ID and the RPC URL.
 Copy the ABI file generated during the compilation of the smart contract from day 2 (smart contracts) into the `public` dir of within this project.
 
 ```shell
-cp ../day02/smart-contract/artifacts/contracts/Counter.sol/Counter.json ./public/counter.abi.json
+cp ../../day02/smart-contract/artifacts/contracts/Counter.sol/Counter.json ./public/counter.abi.json
 ```
 
 Make a new `.env` file by copying the sample one.
