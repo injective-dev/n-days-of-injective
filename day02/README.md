@@ -117,7 +117,8 @@ More on that later!
 
 ## Overview of smart contract development steps
 
-Before we run commands, let's visualize the workflow. Smart contract development usually follows this cycle:
+Before we run commands, let's visualize the workflow.
+Smart contract development usually follows this cycle:
 
 1. **Write Code**: We write our logic in Solidity.
 2. **Compile**: We use `solc` (via Hardhat) to turn that code into machine-readable EVM bytecode.
