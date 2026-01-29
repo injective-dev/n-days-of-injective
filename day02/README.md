@@ -64,16 +64,17 @@ Use git to clone the repo using one of these commands:
 git clone git@github.com:injective-dev/n-days-of-injective.git
 # OR
 git clone https://github.com/injective-dev/n-days-of-injective.git
+
+cd n-days-of-injective
 ```
 
 We will be using this same repository for the rest of the "N Days of Injective" series,
 so keep it safe!
 
-Once cloned, `cd` into the `day02` directory.
+Once cloned, `cd` into the `smart-contract` directory within `day02`.
 
 ```shell
-cd n-days-of-injective
-cd day02
+cd day02/smart-contract
 ```
 
 Also, we'll need to install the dependencies.
@@ -82,7 +83,7 @@ Also, we'll need to install the dependencies.
 npm install
 ```
 
-Let's take a quick tour of the project structure in `day02/src`. This is a standard Hardhat project.
+Let's take a quick tour of the project structure in `day02/smart-contract`. This is a standard Hardhat project.
 - `contracts/`: This is where our Solidity smart contract lives.
 - `artifacts/`: This is where the compiled build outputs will go.
 - `test/`: This is where our test files are located.
@@ -116,7 +117,8 @@ More on that later!
 
 ## Overview of smart contract development steps
 
-Before we run commands, let's visualize the workflow. Smart contract development usually follows this cycle:
+Before we run commands, let's visualize the workflow.
+Smart contract development usually follows this cycle:
 
 1. **Write Code**: We write our logic in Solidity.
 2. **Compile**: We use `solc` (via Hardhat) to turn that code into machine-readable EVM bytecode.

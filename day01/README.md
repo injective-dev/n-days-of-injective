@@ -49,7 +49,7 @@ This is part of the N days of Injective series!
   - You use your **Private Key** to *sign* a transaction, proving you authorized it.
   - The network uses your **Public Key** to *verify* the signature is valid, without ever needing to see your private key.
 
-## EVM wallet and connect to Injective Testnet (demo)
+## Create EVM wallet (demo)
 
 - **Step 1: Generate Seed (Educational).**
   - Go to `https://iancoleman.io/bip39/`.
@@ -66,19 +66,25 @@ This is part of the N days of Injective series!
   - Open MetaMask. If it's a fresh install, choose "Import an existing wallet".
   - Paste the 12-word seed phrase you just generated.
   - Set a password and complete the setup.
-- **Step 4: Connect to Injective Testnet.**
-  - Instead of typing network details manually, we'll use a shortcut.
-  - Go to the Injective Testnet Explorer (Blockscout): `https://testnet.blockscout.injective.network/`
-  - Scroll to the bottom of the page (or look for the "Add Injective EVM Testnet" button).
-  - Click the button. MetaMask will pop up asking to approve the new network.
-  - Click "Approve" and then "Switch Network".
-- **Step 5: Verify.**
-  - Open MetaMask again. You should see "Injective EVM Testnet" selected at the top.
 
 > Note that this is an **extremely insecure** way of dealing with seed phrases and private keys.
 > This method is **not recommended** for actual use with real wallets, real cryptocurrency, or real tokens.
 > This is is **only** suitable for test wallets, test cryptocurrency, or test tokens.
 > In other words, only use this method on Testnet (or similar); and use a more secure method on Mainnet.
+
+## Connect EVM wallet to Injective Testnet
+
+- **Step 1: Connect to Injective Testnet.**
+  - Instead of typing network details manually, we'll use a shortcut.
+  - Go to the Injective Testnet Explorer (Blockscout): `https://testnet.blockscout.injective.network/`
+  - Scroll to the bottom of the page (or look for the "Add Injective EVM Testnet" button).
+  - Click the button. MetaMask will pop up asking to approve the new network.
+  - Click "Approve" and then "Switch Network".
+- **Step 2: Verify.**
+  - Open MetaMask again.
+  - You should see "Injective EVM Testnet" selected at the top.
+
+Now you are able to use an EVM wallet - MetaMask - on Injective Testnet!
 
 ## Claim Testnet INJ for transactions from a faucet (demo)
 

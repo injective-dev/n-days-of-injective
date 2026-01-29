@@ -74,7 +74,7 @@ async function connectEvmWallet() {
     if (typeof window?.ethereum === 'undefined') {
         return {
             ok: false,
-            error: 'no injected web3 provider detected'
+            error: 'no injected web3 provider detected',
         };
     }
 
@@ -87,7 +87,7 @@ async function connectEvmWallet() {
     } catch (ex) {
         return {
             ok: false,
-            error: 'unable to initialise wallet client'
+            error: 'unable to initialise wallet client',
         };
     }
 
@@ -97,9 +97,24 @@ async function connectEvmWallet() {
     } catch (ex) {
         return {
             ok: false,
-            error: 'unable to obtain account details'
+            error: 'unable to obtain account details',
         };
     }
+
+    let chainId;
+    try {
+        console.log(`switching network to chain ID: ${injectiveTestnet.id}`);
+        await client.switchChain({
+            id: injectiveTestnet.id,
+        });
+    } catch (error) {
+        return {
+            ok: false,
+            error: 'unable to switch to target network',
+        };
+    }
+    chainId = parseInt(await client.request({ method: 'eth_chainId' }), 16);
+    console.log({ chainId });
 
     return {
         ok: true,

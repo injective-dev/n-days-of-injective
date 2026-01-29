@@ -39,6 +39,12 @@ They act as a bridge between our JavaScript logic and the EVM wallet.
 First things first, we need to tell our application *which* blockchain to talk to.
 We're building on the Injective Testnet.
 
+First, let's enter the directory for the front end project.
+
+```shell
+cd front/
+```
+
 In the code, we'll import the specific configuration for this chain.
 This ensures that when we send requests, they go to the correct Injective nodes,
 and not to some other EVM network.
@@ -46,8 +52,9 @@ and not to some other EVM network.
 This configuration includes things like the Chain ID and the RPC URL.
 
 Copy the ABI file generated during the compilation of the smart contract from day 2 (smart contracts) into the `public` dir of within this project.
+
 ```shell
-cp ../day02/smart-contract/artifacts/contracts/Counter.sol/Counter.json ./front/public/counter.abi.json
+cp ../../day02/smart-contract/artifacts/contracts/Counter.sol/Counter.json ./public/counter.abi.json
 ```
 
 Make a new `.env` file by copying the sample one.
@@ -75,6 +82,13 @@ Copy-paste the smart contract deployed address from day 2 (smart contracts) as t
 > If you do not, please review the steps in the
 > "Compile Solidity with solc" section, and the
 > "Deploy EVM bytecode to blockchain" section.
+
+Now the project is configured, and almost ready to run.
+The last step before you can run the project is to install the dependencies:
+
+```shell
+npm install
+```
 
 ## Inject web3 provider (demo)
 

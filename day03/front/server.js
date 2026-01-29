@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const envPath = path.resolve(__dirname, '../.env');
+const envPath = path.resolve(__dirname, './.env');
 dotenv.config({ path: envPath });
 const PORT = parseInt(process.env.PORT, 10) || 3000;
 const RPC_URL = process.env.RPC_URL || 'https://k8s.testnet.json-rpc.injective.network/';
@@ -24,7 +24,7 @@ const abiFilePath = path.resolve(__dirname, 'public', SC_ABI);
 let abi;
 try {
     const abiJson = await fs.readFile(abiFilePath);
-    abi = JSON.parse(abiJson);
+    abi = JSON.parse(abiJson).abi;
 } catch (ex) {
     throw new Error(`Unable to parse ABI file: ${abiFilePath}`);
 }
