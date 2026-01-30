@@ -62,7 +62,7 @@ The script begins by setting up the Docker alias and initializing the chain.
 
 ```shell
 alias injectived='docker run -it --rm -v ~/.injectived:/root/.injectived injectivelabs/injective-core:v1.17.1 injectived --home /root/.injectived'
-injectived init injective --chain-id injective-1
+injectived init injective --chain-id injective-1000
 ```
 
 This creates the initial chain configuration in `~/.injectived`.
@@ -178,7 +178,7 @@ Now let's query the balance of one of our genesis accounts:
 ```shell
 injectived query bank balances \
    ${YOUR_INJ_PREFIX_ADDR}}$ \
-   --chain-id injective-1 --node "http://host.docker.internal:26657"
+   --chain-id injective-1000 --node "http://host.docker.internal:26657"
 ```
 
 Notice the `--node` flag specifies how to connect to our local node.
@@ -241,7 +241,7 @@ If queries fail with connection errors:
 - Make sure you set the correct alias for injectived when using the dockerized version
 
 If you see "account not found" errors:
-- Verify you're using the correct chain ID: `injective-1`
+- Verify you're using the correct chain ID: `injective-1000`
 - Double-check the account address
 - Ensure the account was funded during genesis setup
 
