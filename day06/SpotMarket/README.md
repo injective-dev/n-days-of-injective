@@ -1,31 +1,60 @@
-🌟 Exchange Module - SDK TS
+# Day 6: Spot Markets & Trading with SDK
 
-# Features
+This is part of the N days of Injective series!
 
-Written in TypeScript, with type definitions,
-Works in Node.js and in the browser,
-Using SDK to place limit order, fetch price data,
-Parses responses into native JavaScript types
-much more ...
+## Pre-requisites
+ 
+- Completed day 5 (SDK basics) in this series
+- Node.js and npm installed
+- Testnet wallet with INJ tokens and USDT tokens
 
-# Create example project
+## Starter repo (demo)
 
-```bash
-npm init -y
+Welcome back to day 6 of the 7 days of Injective series!
+We will be interacting with Injective's spot markets using the TypeScript SDK today!
+
+Let's get started!
+Open the terminal and navigate to the `day06` directory within this repo.
+This will be our workspace for exploring spot market trading.
+
+```shell
+cd day06/spotmarket/
 ```
 
-# Fetch market data
+Also, we'll need to install the dependencies.
 
-## Installation
-
-```bash 
-npm install @injectivelabs/sdk-ts
+```shell
+npm install
 ```
 
-## Run
+We will need to set up a `.env` file here too.
+Create one with your private key and sender address.
+
+```shell
+cp .env.sample .env
+```
+
+Fill in the empty values within `.env`.
+
+> **Note**  
+> Do not commit `.env`, or push to remote
+
+## Fetch market data
+
+Before we can trade, we need to understand the markets available on Injective.
+The Indexer API provides access to spot market data including tickers, denoms, and precision parameters.
+These parameters are crucial for placing orders correctly.
+
+### Understanding market parameters (demo)
+
+Let's fetch market data to understand the structure.
+Run the fetch script:
 
 ```bash
-npx tsx src/fetch.ts  
+npx tsx src/fetch.ts
+```
+
+The output displays detailed information about available markets:
 
 [
   {
@@ -106,50 +135,95 @@ npx tsx src/fetch.ts
 ]
 ```
 
-This demostrates how to use injective-sdk-ts to fetch market data.
+Each market contains several critical parameters:
+- `marketId`: Unique identifier for the trading pair
+- `ticker`: Human-readable market name (e.g., "INJ/USDT")
+- `baseDecimals` and `quoteDecimals`: Token precision
+- `minPriceTickSize` and `minQuantityTickSize`: Minimum order increments
+- `priceTensMultiplier` and `quantityTensMultiplier`: Precision adjustments for chain formatting
 
-# Place limit order with SDK
+These multipliers are essential for converting human-readable prices to chain-compatible formats.
 
-## Set environment variables
+## Spot limit orders
 
-```shell
-cp .env.sample .env
+Injective's orderbook supports limit orders, allowing traders to specify exact prices.
+Unlike market orders, limit orders give us full control over execution price.
+The SDK provides utilities to format prices and quantities correctly for the chain.
+
+### Price and quantity conversion
+
+The SDK includes conversion functions to handle decimal precision:
+- `spotPriceToChainPriceToFixed`: Converts human price to chain format
+- `spotQuantityToChainQuantityToFixed`: Converts quantity to chain format
+- `spotPriceFromChainPriceToFixed`: Converts chain price back to human-readable format
+
+These functions account for token decimals and tens multipliers automatically.
+
+### Create limit order message (demo)
+
+Let's look at how to construct a limit order.
+Open `src/limitorder.ts` to see the `makeMsgCreateSpotLimitOrder` function.
+It takes a price, quantity, order type (1 for buy, 2 for sell), and market parameters.
+
+```typescript
+export const makeMsgCreateSpotLimitOrder = (
+  price: string,
+  quantity: string,
+  orderType: number,
+  injectiveAddress: string,
+  market: Market
+) => {
+  const subaccountId = getDefaultSubaccountId(injectiveAddress)
+
+  return MsgCreateSpotLimitOrder.fromJSON({
+    subaccountId,
+    injectiveAddress,
+    orderType,
+    price: spotPriceToChainPriceToFixed({
+      value: price,
+      tensMultiplier: market.priceTensMultiplier,
+      baseDecimals: market.baseDecimals,
+      quoteDecimals: market.quoteDecimals,
+    }),
+    quantity: spotQuantityToChainQuantityToFixed({
+      value: quantity,
+      baseDecimals: market.baseDecimals,
+    }),
+    marketId: market.marketId,
+    feeRecipient: injectiveAddress,
+  })
+}
 ```
 
-Fill in the empty values within `.env`.
+The function handles all the necessary conversions internally.
+We just need to provide human-readable values.
 
-> **Note**  
-> Do not commit `.env`, or push to remote
+## Place limit sell order (demo)
 
-## Run
+Time for a demo.
+Let's place a sell order on the INJ/USDT market.
+The script in `src/placeorder.ts` demonstrates a complete workflow.
+
+First, ensure your `.env` file is configured with your private key and address.
+Then run the script:
 
 ```bash
 npx tsx src/placeorder.ts
+```
 
-From address: inj1rv4p9euzue9f8ulpgagmuzwa6rc2lr48u5066h
-Place Order Msg: MsgCreateSpotLimitOrder {
-  params: {
-    subaccountId: '0x1b2a12e782e64a93f3e14751be09ddd0f0af8ea7000000000000000000000000',
-    injectiveAddress: 'inj1rv4p9euzue9f8ulpgagmuzwa6rc2lr48u5066h',
-    orderType: 2,
-    price: '0.01',
-    quantity: '10000000000000000',
-    marketId: '0x0611780ba69656949525013d947713300f56c37b6175e02f26bffa495c3208fe',
-    feeRecipient: 'inj1rv4p9euzue9f8ulpgagmuzwa6rc2lr48u5066h'
-  }
-}
+The transaction response will look like this:
 Transaction result: {
-  height: 108222322,
-  txhash: 'CD08F2F8A1FDB396A9CCC75D2DEE6223C56D497D6F979EBD3E4E1C8A9693755C',
+  height: 111205416,
+  txhash: 'E19913D4ABFB982D8349DB8F706359D2B77449951A13C15608D9F75D56982E6A',
   codespace: '',
   code: 0,
-  data: '1283010A3B2F696E6A6563746976652E65786368616E67652E763162657461312E4D736743726561746553706F744C696D69744F72646572526573706F6E736512440A42307835663063386232643665393666333061626236326235346665396239616361363632316166343365353162346633333434633863373932643135393334343632',
+  data: '1283010A3B2F696E6A6563746976652E65786368616E67652E763162657461312E4D736743726561746553706F744C696D69744F72646572526573706F6E736512440A42307832303135336362366435613337326232346338396462666165663636636162383436653033393765303965313839353839663738656333653764306435653064',
   rawLog: '',
   logs: [],
   info: '',
   gasWanted: 200000,
-  gasUsed: 138504,
-  timestamp: '2026-01-08T11:56:11Z',
+  gasUsed: 138175,
+  timestamp: '2026-01-30T07:15:47Z',
   events: [
     Object <[Object: null prototype] {}> {
       type: 'coin_spent',
@@ -202,20 +276,157 @@ Transaction result: {
   ],
   tx: Object <[Object: null prototype] {}> {
     typeUrl: '/cosmos.tx.v1beta1.Tx',
-    value: Uint8Array(551) [
-       10, 227,   2,  10, 219,   2,  10,  51,  47, 105, 110, 106,
+    value: Uint8Array(543) [
+       10, 219,   2,  10, 211,   2,  10,  51,  47, 105, 110, 106,
       101,  99, 116, 105, 118, 101,  46, 101, 120,  99, 104,  97,
       110, 103, 101,  46, 118,  49,  98, 101, 116,  97,  49,  46,
        77, 115, 103,  67, 114, 101,  97, 116, 101,  83, 112, 111,
       116,  76, 105, 109, 105, 116,  79, 114, 100, 101, 114,  18,
-      163,   2,  10,  42, 105, 110, 106,  49, 114, 118,  52, 112,
-       57, 101, 117, 122, 117, 101,  57, 102,  56, 117, 108, 112,
-      103,  97, 103, 109, 117, 122, 119,  97,  54, 114,  99,  50,
-      108, 114,  52,  56,
-      ... 451 more items
+      155,   2,  10,  42, 105, 110, 106,  49,  51,  50, 112, 113,
+      103, 106,  57, 100, 112, 103, 121, 100, 106, 104, 118, 115,
+       56,  56, 112, 120,  97, 115,  55, 122,  99,  48,  52, 107,
+      104,  54, 112,  55,
+      ... 443 more items
     ]
   },
-  txHash: 'CD08F2F8A1FDB396A9CCC75D2DEE6223C56D497D6F979EBD3E4E1C8A9693755C'
+  txHash: 'E19913D4ABFB982D8349DB8F706359D2B77449951A13C15608D9F75D56982E6A'
+}
 
 ```
-This demostrates how to use injective-sdk-ts to place limit order
+
+A successful transaction returns a `txHash` that can be viewed on the block explorer.
+The `code: 0` indicates success, while any other code indicates an error.
+You can track your transaction at `https://testnet.explorer.injective.network`.
+
+### Understanding order notional
+
+Injective enforces a minimum order notional (price × quantity) requirement.
+For most markets, this is 1 USDT equivalent.
+If your order is too small, you'll see an error:
+
+```bash
+order notional (0.794400000000000000) is less than the minimum notional for the market (1.000000000000000000): invalid notional
+```
+
+To fix this, either increase your quantity or adjust your price so that `price × quantity ≥ 1`.
+
+### Why orders may not fill immediately
+
+If you don't see immediate asset changes in the explorer, it's because your order is sitting on the orderbook.
+Limit orders only execute when someone takes the other side at your specified price.
+If you price a sell order too high (above market), it won't fill until the market rises to your price.
+Similarly, a buy order priced too low won't fill until the market drops to that level.
+
+## Place limit buy order (demo)
+
+Now let's place a buy order instead.
+The only change needed is the `orderType` parameter in `makeMsgCreateSpotLimitOrder`.
+
+Edit `src/placeorder.ts` and change the order type from `2` (sell) to `1` (buy):
+
+```typescript
+const placeOrderMsg = makeMsgCreateSpotLimitOrder(
+    (bestAsk * multiplier).toString(),  // price of the asset
+    "0.1",    // how much to buy/sell
+    1,    // orderType (1 for Buy, 2 for Sell)
+    SENDER,
+    {
+        marketId: '0x0611780ba69656949525013d947713300f56c37b6175e02f26bffa495c3208fe', // Example marketId
+        baseDecimals: 18,
+        quoteDecimals: 6,
+        priceTensMultiplier: -3, 
+        quantityTensMultiplier:-3, 
+    },
+);
+```
+
+Run the script again to place your buy order:
+
+```bash
+npx tsx src/placeorder.ts
+```
+
+The transaction response will be similar to the sell order.
+Check the block explorer to verify your order was placed successfully.
+
+## Get market price (demo)
+
+To make informed trading decisions, we need current market prices.
+The `getMarketPrice` function in `src/limitorder.ts` fetches the orderbook and calculates:
+- Best bid (highest buy price)
+- Best ask (lowest sell price)  
+- Mid price (average of bid and ask)
+- Spread (difference between ask and bid)
+
+```typescript
+export const getMarketPrice = async (marketId: string) => {
+  try {
+    const orderbook = await indexerSpotApi.fetchOrderbookV2(marketId)
+    
+    const bestBid = orderbook.buys[0]?.price
+    const bestAsk = orderbook.sells[0]?.price
+    
+    let midPrice = '0'
+    if (bestBid && bestAsk) {
+      midPrice = ((parseFloat(bestBid) + parseFloat(bestAsk)) / 2).toString()
+    } else if (bestBid) {
+      midPrice = bestBid
+    } else if (bestAsk) {
+      midPrice = bestAsk
+    }
+
+    return {
+      bestBid: bestBid || '0',
+      bestAsk: bestAsk || '0',
+      midPrice,
+      spread: bestBid && bestAsk ? (parseFloat(bestAsk) - parseFloat(bestBid)).toString() : '0'
+    }
+  } catch (error) {
+    console.error('Error fetching market price:', error)
+    throw error
+  }
+}
+```
+
+This function is useful for:
+- Determining competitive order prices
+- Calculating slippage
+- Market analysis and monitoring
+
+## Convert chain price to price (demo)
+
+When fetching data from the chain, prices come in chain format.
+We need to convert them back to human-readable format.
+The `convertChainPriceToPrice` function handles this:
+
+```typescript
+export const convertChainPriceToPrice = (
+  chainPrice: string,
+  tensMultiplier: number,
+  baseDecimals: number,
+  quoteDecimals: number,
+) => {
+  return spotPriceFromChainPriceToFixed({
+    value: chainPrice,
+    tensMultiplier,
+    baseDecimals,
+    quoteDecimals,
+  })
+}
+```
+
+This is the inverse of `spotPriceToChainPriceToFixed`.
+Use it when processing orderbook data, trade history, or any chain-returned price values.
+
+## Complete!
+
+Congratulations on completing this.
+You now know how to:
+- Fetch spot market data
+- Understand market parameters and precision
+- Place limit buy and sell orders
+- Get current market prices
+- Convert between chain and human-readable formats
+
+Next up is day 7,
+where we'll explore about running your local injective node by docker
