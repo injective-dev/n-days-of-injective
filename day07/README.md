@@ -1,97 +1,260 @@
-# Injective Day 07 – Run a Local Injective Node and Interact With It
+# Day 7: Running a Local Injective Node
 
-This repository is part of the **Injective Day 07** learning series.  
-Its goal is to help developers understand how Injective works at the protocol level by running an Injective node locally and interacting with it directly.
+This is part of the N days of Injective series!
 
-By the end of this repo, you should be able to start a local Injective node, connect to it, and perform basic interactions using standard Injective tooling.
+## Pre-requisites
+ 
+- Completed day 5 (SDK basics) in this series
+- Docker installed on your system
+- Basic understanding of blockchain nodes and consensus
 
----
+## Starter repo (demo)
 
-## What You Will Learn
+Welcome back to day 7 of the 7 days of Injective series!
+We will be running a local Injective node today!
 
-- How to run an Injective node locally
-- How the Injective blockchain is initialized and started
+If you are joining us from day 5, you're all set.
+If not, please check the prerequisites.
+Let's get started!
+Open the terminal and navigate to the `day07` directory within this repo.
+This will be our workspace for setting up and running a local Injective node.
 
----
-
-## Prerequisites
-
-Before getting started, make sure you have the following installed:
-
-- Go (version compatible with Injective)
-- Docker
-- Git
-
----
-Note: if you finihsed day05, your enviorment are all set.
-
-## Repository Structure
-
-```text
-.
-├── setup.sh
-├── README.md
-
+```shell
+cd day07/
 ```
 
+## Understanding Injective nodes
 
-## Guide: Running an Injective Node with setup.sh
+Before we start, let's understand what we're building.
+An Injective node is a piece of software that participates in the Injective blockchain network.
+Nodes maintain a copy of the blockchain state and validate transactions.
+They communicate with other nodes to reach consensus on the state of the network.
 
-This guide will help new users set up and run an Injective node using the provided `setup.sh` script in this repository. In this guide, a docker version of script will be used, if your platform support Linux, you can follow the guide from Injective doc: https://docs.injective.network/infra/join-a-network.
+Running a local node is essential for development and testing.
+It allows us to interact with the blockchain without needing testnet tokens or internet connectivity.
+We can test smart contracts, simulate transactions, and understand how the protocol works at a deeper level.
 
-### Prerequisites
-- macOS or Linux environment (tested on macOS)
-- Docker
+## Why Docker?
 
-### Steps to Run Injective Node
+For this tutorial, we use Docker to run the Injective node.
+Docker provides consistency across different operating systems.
+The official Injective Docker image includes all necessary dependencies pre-configured.
+This eliminates the complexity of building from source and managing Go versions.
 
-1. **Clone the Repository**
-   ```sh
-   git clone <this-repo-url>
-   cd n-days-of-injective/day07
-   ```
+If you're running on Linux and prefer building from source,
+refer to the official Injective documentation at https://docs.injective.network/infra/join-a-network.
 
-2. **Review and Edit Environment Variables (Optional)**
-   - Open `setup.sh` and review the key and mnemonic variables at the top of the file.
-   - You can replace them with your own if needed.
+## Setup script overview
 
-3. **Make the Script Executable**
-   ```sh
-   chmod +x setup.sh
-   ```
+The `setup.sh` script automates the initialization of a local Injective chain.
+It performs several critical operations:
+- Initializes the chain configuration
+- Creates genesis accounts with predefined balances
+- Imports validator and user keys from mnemonics
+- Configures genesis parameters for fast local testing
+- Generates and signs the genesis transaction
 
-4. **Run the Setup Script**
-   ```sh
-   ./setup.sh
-   ```
-   - The script will:
-     - Import keys using mnemonics
-     - Allocate genesis accounts for all users and validators
-     - Set up the genesis file and sign the genesis transaction
+Let's break down what happens during setup.
 
-5. **Start the Injective Node**
-   - After setup, follow any additional instructions printed by the script to start your node.
-   - Typically, you can run:
-     ```sh
-     injectived start
-     ```
+## Genesis configuration (demo)
 
-6. **Interact with your local network**
-   - Open another terminal, run command to check your local network state
-   - Refer to day05 for more `injectived` examples
-   ```sh
-   injectived query bank balances \
-   ${inj-prefix-wallet-address} \
-   --chain-id injective-1
-   ```
+The script begins by setting up the Docker alias and initializing the chain.
 
-### Troubleshooting
-- If you encounter permission errors, ensure you have execution rights on the script.
-- For mnemonic/key errors, double-check the values in `setup.sh`.
-- If you can not interact with your local node, check your docker instance not stopped.
+```shell
+alias injectived='docker run -it --rm -v ~/.injectived:/root/.injectived injectivelabs/injective-core:v1.17.1 injectived --home /root/.injectived'
+injectived init injective --chain-id injective-1
+```
 
-### Additional Resources
-- See the official Injective documentation for advanced configuration: https://docs.injective.network/
----
+This creates the initial chain configuration in `~/.injectived`.
+The `--rm` flag ensures the container is removed after execution.
+The `-v` flag mounts our local `.injectived` directory into the container.
 
+Next, the script modifies genesis parameters for a developer-friendly local chain:
+- Governance voting period: 10 seconds (instead of days)
+- Minimum gas prices: 500000000inj
+- Fast block times with 2.5 second commits
 
+These changes make local development much faster.
+We can test governance proposals and see results immediately.
+
+## Account creation (demo)
+
+The script creates several pre-funded accounts using test mnemonics.
+These accounts include validators, users, and signers.
+
+```shell
+WASM_KEY="wasm"
+WASM_MNEMONIC="juice dog over thing anger search film document sight fork enrich jungle vacuum grab more sunset winner diesel flock smooth route impulse cheap toward"
+```
+
+Each account is imported using the `expect` command to handle interactive prompts.
+The keyring backend is set to `test` mode, which doesn't require passwords.
+This is suitable for local development but should never be used in production.
+
+The genesis account receives a large balance of INJ and other tokens:
+
+```shell
+injectived add-genesis-account genesis 1000000000000000000000000inj,...
+```
+
+This ensures we have plenty of tokens for testing transactions and smart contracts.
+
+## Running the setup script (demo)
+
+Time for a demo.
+Make the script executable and run it:
+
+```shell
+chmod +x setup.sh
+./setup.sh
+```
+
+The script will output progress messages as it:
+- Initializes the chain
+- Configures genesis parameters  
+- Imports all test keys
+- Allocates genesis accounts
+- Signs and collects the genesis transaction
+- Validates the genesis file
+
+When you see "Setup done!", the chain is ready to start.
+
+## Configure RPC endpoint
+
+Before starting the node, we need to configure it to accept external connections.
+By default, the RPC server only listens on localhost within the container.
+We need to change this to allow connections from the host machine.
+
+Edit the configuration file:
+
+```shell
+vim ~/.injectived/config/config.toml
+```
+
+Find the `[rpc]` section and change:
+
+```toml
+laddr = "tcp://127.0.0.1:26657"
+```
+
+To:
+
+```toml
+laddr = "tcp://0.0.0.0:26657"
+```
+
+This allows the RPC server to accept connections from any network interface.
+Combined with Docker's port mapping, we'll be able to query the node from our host machine.
+
+## Start the node (demo)
+
+Now we can start the Injective node.
+Run the following command:
+
+```shell
+docker run -p 26657:26657 -it --rm -v ~/.injectived:/root/.injectived injectivelabs/injective-core:v1.17.1 injectived --home /root/.injectived start
+```
+
+The `-p 26657:26657` flag maps the container's RPC port to your host machine.
+The node will begin producing blocks immediately.
+You should see log output showing block heights incrementing.
+
+Leave this terminal running.
+The node needs to stay active for us to interact with it.
+
+## Query the local node (demo)
+
+Open a new terminal window.
+We can now query our local node using the Injective CLI.
+
+First, set up an alias for the dockerized injectived command:
+
+```shell
+alias injectived='docker run -it --rm -v ~/.injectived:/root/.injectived injectivelabs/injective-core:v1.17.1 injectived --home /root/.injectived'
+```
+
+Now let's query the balance of one of our genesis accounts:
+
+```shell
+injectived query bank balances \
+   ${YOUR_INJ_PREFIX_ADDR}}$ \
+   --chain-id injective-1 --node "http://host.docker.internal:26657"
+```
+
+Notice the `--node` flag specifies how to connect to our local node.
+The special hostname `host.docker.internal` allows Docker containers to access the host machine.
+This is necessary because we're running the query from within a container.
+
+The output should show the balances for this account:
+
+```
+balances: []
+pagination: {}
+```
+
+Initially, it might be empty if this particular address wasn't funded in genesis.
+Try querying the genesis account address instead, which should show large balances.
+
+## Verifying the setup
+
+We can perform additional checks to ensure everything is working correctly.
+
+Check the node status:
+
+```shell
+injectived status --node "http://host.docker.internal:26657"
+```
+
+This shows the current block height, chain ID, and other node information.
+
+List all keys in the keyring:
+
+```shell
+injectived keys list --keyring-backend test
+```
+
+This displays all the accounts we imported during setup.
+You should see entries for wasm, localkey, user1, user2, and others.
+
+## What we've accomplished
+
+At this point, we have:
+- Initialized a local Injective blockchain
+- Configured it for fast local development
+- Funded multiple test accounts
+- Started a node that's producing blocks
+- Successfully queried the node from the command line
+
+This local environment is perfect for testing smart contracts, simulating transactions, and learning how Injective works internally.
+
+## Troubleshooting
+
+If the node fails to start, check the following:
+- Ensure Docker is running
+- Verify port 26657 is not already in use
+- Check that `~/.injectived` was properly initialized
+
+If queries fail with connection errors:
+- Verify the node is still running in the other terminal
+- Confirm the RPC endpoint is set to `0.0.0.0:26657` in `config.toml`
+- Check that port mapping `-p 26657:26657` was included in the start command
+- Make sure you set the correct alias for injectived when using the dockerized version
+
+If you see "account not found" errors:
+- Verify you're using the correct chain ID: `injective-1`
+- Double-check the account address
+- Ensure the account was funded during genesis setup
+
+## Complete!
+
+Congratulations on completing this tutorial.
+You now know how to:
+- Initialize a local Injective chain with custom parameters
+- Import keys and create genesis accounts
+- Configure and start a local node
+- Query blockchain state from the command line
+
+With a local node running, you have a powerful development environment.
+You can deploy smart contracts, test SDK applications, and experiment with Injective features without needing testnet access.
+
+For advanced configuration and production deployments, refer to the official Injective documentation at https://docs.injective.network/infra/join-a-network.

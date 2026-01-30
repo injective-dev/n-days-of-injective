@@ -7,17 +7,18 @@ shopt -s expand_aliases
 killall injectived &>/dev/null || true
 rm -rf ~/.injectived
 
-alias injectived='docker run -it --rm -v ~/.injectived:/root/.injectived injectivelabs/injective-core:v1.14.1 injectived --home /root/.injectived'
-INJECTIVED="docker run -it --rm -v $HOME/.injectived:/root/.injectived injectivelabs/injective-core:v1.14.1 injectived --home /root/.injectived"
-CHAINID="injective-1"
+alias injectived='docker run -it --rm -v ~/.injectived:/root/.injectived injectivelabs/injective-core:v1.17.1 injectived --home /root/.injectived'
+INJECTIVED="docker run -it --rm -v $HOME/.injectived:/root/.injectived injectivelabs/injective-core:v1.17.1 injectived --home /root/.injectived"
+CHAINID="injective-1000"
 MONIKER="injective"
-PASSPHRASE="12345678"
+KEYRING_BACKEND="test"
 FEEDADMIN="inj1k2z3chspuk9wsufle69svmtmnlc07rvw9djya7"
 
 # Set moniker and chain-id for Ethermint (Moniker can be anything, chain-id must be an integer)
 injectived init $MONIKER --chain-id $CHAINID
-perl -i -pe 's/^timeout_commit = ".*?"/timeout_commit = "2500ms"/' ~/.injectived/config/config.toml
-perl -i -pe 's/^minimum-gas-prices = ".*?"/minimum-gas-prices = "500000000inj"/' ~/.injectived/config/app.toml
+perl -i -pe 's/^timeout_commit = ".*?"/timeout_commit = "2500ms"/' $HOME/.injectived/config/config.toml
+perl -i -pe 's/^minimum-gas-prices = ".*?"/minimum-gas-prices = "1inj"/' $HOME/.injectived/config/app.toml
+
 
 cat $HOME/.injectived/config/genesis.json | jq '.app_state["staking"]["params"]["bond_denom"]="inj"' > $HOME/.injectived/config/tmp_genesis.json && mv $HOME/.injectived/config/tmp_genesis.json $HOME/.injectived/config/genesis.json
 cat $HOME/.injectived/config/genesis.json | jq '.app_state["crisis"]["constant_fee"]["denom"]="inj"' > $HOME/.injectived/config/tmp_genesis.json && mv $HOME/.injectived/config/tmp_genesis.json $HOME/.injectived/config/genesis.json
@@ -89,14 +90,14 @@ PEGGY_DENOM_DECIMALS="${USDT},${USDC},${ONEINCH},${AXS},${BAT},${BNB},${WBTC},${
 IBC_DENOM_DECIMALS="${ATOM},${USTC},${AXL},${XPRT},${SCRT},${OSMO},${LUNC},${HUAHUA},${EVMOS},${DOT}"
 DENOM_DECIMALS='['${INJ},${PEGGY_DENOM_DECIMALS},${IBC_DENOM_DECIMALS}']'
 
-cat $HOME/.injectived/config/genesis.json | jq '.app_state["exchange"]["denom_decimals"]='${DENOM_DECIMALS} > $HOME/.injectived/config/tmp_genesis.json && mv $HOME/.injectived/config/tmp_genesis.json $HOME/.injectived/config/genesis.json
+cat $HOME/.injectived/config/genesis.json | jq '.app_state["exchange"]["auction_exchange_transfer_denom_decimals"]='${DENOM_DECIMALS} > $HOME/.injectived/config/tmp_genesis.json && mv $HOME/.injectived/config/tmp_genesis.json $HOME/.injectived/config/genesis.json
 
-injectived keys add genesis --keyring-backend=test
-GENESIS_ADDR=$(injectived keys show genesis --address --keyring-backend=test)
+injectived keys add genesis --keyring-backend=$KEYRING_BACKEND
+GENESIS_ADDR=$(injectived keys show genesis --address --keyring-backend=$KEYRING_BACKEND)
 echo "Genesis address: $GENESIS_ADDR"
-injectived add-genesis-account --keyring-backend=test --chain-id $CHAINID genesis 1000000000000000000000000inj,1000000000000000000000000atom,100000000000000000000000000peggy0xdAC17F958D2ee523a2206206994597C13D831ec7,100000000000000000000000000peggy0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
+injectived add-genesis-account --keyring-backend=$KEYRING_BACKEND --chain-id $CHAINID genesis 1000000000000000000000000inj,1000000000000000000000000atom,100000000000000000000000000peggy0xdAC17F958D2ee523a2206206994597C13D831ec7,100000000000000000000000000peggy0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
 # zero address account
-injectived add-genesis-account --chain-id $CHAINID inj1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqe2hm49 1inj --keyring-backend=test
+injectived add-genesis-account --chain-id $CHAINID inj1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqe2hm49 1inj --keyring-backend=$KEYRING_BACKEND
 
 echo "finish initial genesis setup"
 
@@ -138,134 +139,110 @@ USER10_MNEMONIC="apart acid night more advance december weather expect pause tax
 
 NEWLINE=$'\n'
 
-# Import keys from mnemonics
-# yes "$WASM_MNEMONIC$NEWLINE$PASSPHRASE" | injectived keys add $WASM_KEY --recover
-# injectived keys add "$WASM_KEY" --recover --keyring-backend=test
+# Import keys from mnemonics using expect
 expect <<EOF
-spawn $INJECTIVED keys add "$WASM_KEY" --recover --keyring-backend=test
+spawn $INJECTIVED keys add "$WASM_KEY" --recover --keyring-backend=$KEYRING_BACKEND
 expect "> Enter your bip39 mnemonic"
 send "$WASM_MNEMONIC\r"
 expect eof
 EOF
 
 echo "finish wasm key import"
-# yes "$VAL_MNEMONIC$NEWLINE$PASSPHRASE" | injectived keys add $VAL_KEY --recover
+
 expect <<EOF
-spawn $INJECTIVED keys add "$VAL_KEY" --recover --keyring-backend=test
+spawn $INJECTIVED keys add "$VAL_KEY" --recover --keyring-backend=$KEYRING_BACKEND
 expect "> Enter your bip39 mnemonic"
 send "$VAL_MNEMONIC\r"
 expect eof
 EOF
 
-# yes "$USER1_MNEMONIC$NEWLINE$PASSPHRASE" | injectived keys add $USER1_KEY --recover
 expect <<EOF
-spawn $INJECTIVED keys add "$USER1_KEY" --recover --keyring-backend=test
+spawn $INJECTIVED keys add "$USER1_KEY" --recover --keyring-backend=$KEYRING_BACKEND
 expect "> Enter your bip39 mnemonic"
 send "$USER1_MNEMONIC\r"
 expect eof
 EOF
 
-# yes "$USER2_MNEMONIC$NEWLINE$PASSPHRASE" | injectived keys add $USER2_KEY --recover
 expect <<EOF
-spawn $INJECTIVED keys add "$USER2_KEY" --recover --keyring-backend=test
+spawn $INJECTIVED keys add "$USER2_KEY" --recover --keyring-backend=$KEYRING_BACKEND
 expect "> Enter your bip39 mnemonic"
 send "$USER2_MNEMONIC\r"
 expect eof
 EOF
 
-# yes "$USER3_MNEMONIC$NEWLINE$PASSPHRASE" | injectived keys add $USER3_KEY --recover
 expect <<EOF
-spawn $INJECTIVED keys add "$USER3_KEY" --recover --keyring-backend=test
+spawn $INJECTIVED keys add "$USER3_KEY" --recover --keyring-backend=$KEYRING_BACKEND
 expect "> Enter your bip39 mnemonic"
 send "$USER3_MNEMONIC\r"
 expect eof
 EOF
 
-# yes "$USER4_MNEMONIC$NEWLINE$PASSPHRASE" | injectived keys add $USER4_KEY --recover
 expect <<EOF
-spawn $INJECTIVED keys add "$USER4_KEY" --recover --keyring-backend=test
+spawn $INJECTIVED keys add "$USER4_KEY" --recover --keyring-backend=$KEYRING_BACKEND
 expect "> Enter your bip39 mnemonic"
 send "$USER4_MNEMONIC\r"
 expect eof
 EOF
 
-# yes "$USER5_MNEMONIC$NEWLINE$PASSPHRASE" | injectived keys add $USER5_KEY --recover
 expect <<EOF
-spawn $INJECTIVED keys add "$USER5_KEY" --recover --keyring-backend=test
+spawn $INJECTIVED keys add "$USER5_KEY" --recover --keyring-backend=$KEYRING_BACKEND
 expect "> Enter your bip39 mnemonic"
 send "$USER5_MNEMONIC\r"
 expect eof
 EOF
 
-# yes "$USER6_MNEMONIC$NEWLINE$PASSPHRASE" | injectived keys add $USER6_KEY --recover
 expect <<EOF
-spawn $INJECTIVED keys add "$USER6_KEY" --recover --keyring-backend=test
+spawn $INJECTIVED keys add "$USER6_KEY" --recover --keyring-backend=$KEYRING_BACKEND
 expect "> Enter your bip39 mnemonic"
 send "$USER6_MNEMONIC\r"
 expect eof
 EOF
 
-# yes "$USER7_MNEMONIC$NEWLINE$PASSPHRASE" | injectived keys add $USER7_KEY --recover
 expect <<EOF
-spawn $INJECTIVED keys add "$USER7_KEY" --recover --keyring-backend=test
+spawn $INJECTIVED keys add "$USER7_KEY" --recover --keyring-backend=$KEYRING_BACKEND
 expect "> Enter your bip39 mnemonic"
 send "$USER7_MNEMONIC\r"
 expect eof
 EOF
 
-# yes "$USER8_MNEMONIC$NEWLINE$PASSPHRASE" | injectived keys add $USER8_KEY --recover
 expect <<EOF
-spawn $INJECTIVED keys add "$USER8_KEY" --recover --keyring-backend=test
+spawn $INJECTIVED keys add "$USER8_KEY" --recover --keyring-backend=$KEYRING_BACKEND
 expect "> Enter your bip39 mnemonic"
 send "$USER8_MNEMONIC\r"
 expect eof
 EOF
 
-# yes "$USER9_MNEMONIC$NEWLINE$PASSPHRASE" | injectived keys add $USER9_KEY --recover
 expect <<EOF
-spawn $INJECTIVED keys add "$USER9_KEY" --recover --keyring-backend=test
+spawn $INJECTIVED keys add "$USER9_KEY" --recover --keyring-backend=$KEYRING_BACKEND
 expect "> Enter your bip39 mnemonic"
 send "$USER9_MNEMONIC\r"
 expect eof
 EOF
 
-# yes "$USER10_MNEMONIC$NEWLINE$PASSPHRASE" | injectived keys add $USER10_KEY --recover
 expect <<EOF
-spawn $INJECTIVED keys add "$USER10_KEY" --recover --keyring-backend=test
+spawn $INJECTIVED keys add "$USER10_KEY" --recover --keyring-backend=$KEYRING_BACKEND
 expect "> Enter your bip39 mnemonic"
 send "$USER10_MNEMONIC\r"
 expect eof
 EOF
 
 # Allocate genesis accounts (cosmos formatted addresses)
-# yes $PASSPHRASE | injectived add-genesis-account --chain-id $CHAINID $(injectived keys show $WASM_KEY -a) 1000000000000000000000inj
-injectived add-genesis-account --chain-id $CHAINID wasm 1000000000000000000000inj --keyring-backend=test
-# yes $PASSPHRASE | injectived add-genesis-account --chain-id $CHAINID $(injectived keys show $VAL_KEY -a) 1000000000000000000000inj
-injectived add-genesis-account --chain-id $CHAINID localkey 1000000000000000000000inj --keyring-backend=test
-# yes $PASSPHRASE | injectived add-genesis-account --chain-id $CHAINID $(injectived keys show $USER1_KEY -a) 1000000000000000000000inj,1000000000000000000000atom,100000000000000000000000000peggy0xdAC17F958D2ee523a2206206994597C13D831ec7,100000000000000000000000000peggy0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
-injectived add-genesis-account --chain-id $CHAINID user1 1000000000000000000000inj,1000000000000000000000atom,100000000000000000000000000peggy0xdAC17F958D2ee523a2206206994597C13D831ec7,100000000000000000000000000peggy0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599 --keyring-backend=test
-# yes $PASSPHRASE | injectived add-genesis-account --chain-id $CHAINID $(injectived keys show $USER2_KEY -a) 1000000000000000000000inj,100000000000000000000000000peggy0xdAC17F958D2ee523a2206206994597C13D831ec7,100000000000000000000000000peggy0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
-injectived add-genesis-account --chain-id $CHAINID user2 1000000000000000000000inj,100000000000000000000000000peggy0xdAC17F958D2ee523a2206206994597C13D831ec7,100000000000000000000000000peggy0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599 --keyring-backend=test
-# yes $PASSPHRASE | injectived add-genesis-account --chain-id $CHAINID $(injectived keys show $USER3_KEY -a) 1000000000000000000000inj
-injectived add-genesis-account --chain-id $CHAINID user3 1000000000000000000000inj --keyring-backend=test
-# yes $PASSPHRASE | injectived add-genesis-account --chain-id $CHAINID $(injectived keys show $USER4_KEY -a) 1000000000000000000000inj
-injectived add-genesis-account --chain-id $CHAINID user4 1000000000000000000000inj --keyring-backend=test
-# yes $PASSPHRASE | injectived add-genesis-account --chain-id $CHAINID $(injectived keys show $USER5_KEY -a) 100000000000000000000000000inj
-injectived add-genesis-account --chain-id $CHAINID ocrfeedadmin 100000000000000000000000000inj --keyring-backend=test
-# yes $PASSPHRASE | injectived add-genesis-account --chain-id $CHAINID $(injectived keys show $USER6_KEY -a) 100000000000000000000000000inj
-injectived add-genesis-account --chain-id $CHAINID signer1 100000000000000000000000000inj --keyring-backend=test
-# yes $PASSPHRASE | injectived add-genesis-account --chain-id $CHAINID $(injectived keys show $USER7_KEY -a) 100000000000000000000000000inj
-injectived add-genesis-account --chain-id $CHAINID signer2 100000000000000000000000000inj --keyring-backend=test
-# yes $PASSPHRASE | injectived add-genesis-account --chain-id $CHAINID $(injectived keys show $USER8_KEY -a) 100000000000000000000000000inj
-injectived add-genesis-account --chain-id $CHAINID signer3 100000000000000000000000000inj --keyring-backend=test
-# yes $PASSPHRASE | injectived add-genesis-account --chain-id $CHAINID $(injectived keys show $USER9_KEY -a) 100000000000000000000000000inj
-injectived add-genesis-account --chain-id $CHAINID signer4 100000000000000000000000000inj --keyring-backend=test
-# yes $PASSPHRASE | injectived add-genesis-account --chain-id $CHAINID $(injectived keys show $USER10_KEY -a) 100000000000000000000000000inj
-injectived add-genesis-account --chain-id $CHAINID signer5 100000000000000000000000000inj --keyring-backend=test
+injectived add-genesis-account --chain-id $CHAINID wasm 1000000000000000000000inj --keyring-backend=$KEYRING_BACKEND
+injectived add-genesis-account --chain-id $CHAINID localkey 1000000000000000000000inj --keyring-backend=$KEYRING_BACKEND
+injectived add-genesis-account --chain-id $CHAINID user1 1000000000000000000000inj,1000000000000000000000atom,100000000000000000000000000peggy0xdAC17F958D2ee523a2206206994597C13D831ec7,100000000000000000000000000peggy0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599 --keyring-backend=$KEYRING_BACKEND
+injectived add-genesis-account --chain-id $CHAINID user2 1000000000000000000000inj,100000000000000000000000000peggy0xdAC17F958D2ee523a2206206994597C13D831ec7,100000000000000000000000000peggy0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599 --keyring-backend=$KEYRING_BACKEND
+injectived add-genesis-account --chain-id $CHAINID user3 1000000000000000000000inj --keyring-backend=$KEYRING_BACKEND
+injectived add-genesis-account --chain-id $CHAINID user4 1000000000000000000000inj --keyring-backend=$KEYRING_BACKEND
+injectived add-genesis-account --chain-id $CHAINID ocrfeedadmin 100000000000000000000000000inj --keyring-backend=$KEYRING_BACKEND
+injectived add-genesis-account --chain-id $CHAINID signer1 100000000000000000000000000inj --keyring-backend=$KEYRING_BACKEND
+injectived add-genesis-account --chain-id $CHAINID signer2 100000000000000000000000000inj --keyring-backend=$KEYRING_BACKEND
+injectived add-genesis-account --chain-id $CHAINID signer3 100000000000000000000000000inj --keyring-backend=$KEYRING_BACKEND
+injectived add-genesis-account --chain-id $CHAINID signer4 100000000000000000000000000inj --keyring-backend=$KEYRING_BACKEND
+injectived add-genesis-account --chain-id $CHAINID signer5 100000000000000000000000000inj --keyring-backend=$KEYRING_BACKEND
 
 echo "Signing genesis transaction"
 # Sign genesis transaction
-injectived genesis gentx genesis 1000000000000000000000inj --chain-id $CHAINID --keyring-backend=test
+injectived genesis gentx genesis 1000000000000000000000inj --chain-id $CHAINID --keyring-backend=$KEYRING_BACKEND
 
 echo "Collecting genesis transaction"
 # Collect genesis tx
