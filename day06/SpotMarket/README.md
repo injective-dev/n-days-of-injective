@@ -55,7 +55,7 @@ npx tsx src/fetch.ts
 ```
 
 The output displays detailed information about available markets:
-
+```bash
 [
   {
     "marketId": "0x0611780ba69656949525013d947713300f56c37b6175e02f26bffa495c3208fe",
@@ -212,6 +212,7 @@ npx tsx src/placeorder.ts
 ```
 
 The transaction response will look like this:
+```bash
 Transaction result: {
   height: 111205416,
   txhash: 'E19913D4ABFB982D8349DB8F706359D2B77449951A13C15608D9F75D56982E6A',
