@@ -40,9 +40,13 @@ By moving the order book and matching engine into the core protocol, Injective a
 
 ## Demos
 
-This repository includes two demos demonstrating how to interact with the Injective Exchange Module.
+This repository includes a demo demonstrating how to interact with the Injective Exchange Module using the Injective TypeScript SDK.
 
-1. Interaction with Injective Exchange precompile smart contracts from an EVM development environment.
-2. Interaction with the Exchange Module using the Injective TypeScript SDK.
+See the [spotmarket](./spotmarket/) directory for the complete tutorial on:
+- Fetching spot market data
+- Understanding market parameters
+- Placing limit buy and sell orders
+- Querying order status and trade history
+- Converting between chain and human-readable formats
 
 Each demo illustrates different integration paths for developers building on Injective.
