@@ -68,6 +68,8 @@ injectived init injective --chain-id injective-1000
 This creates the initial chain configuration in `~/.injectived`.
 The `--rm` flag ensures the container is removed after execution.
 The `-v` flag mounts our local `.injectived` directory into the container.
+Note that `--chain-id` is set to a value that is neither Injective Mainnet nor Injective Testnet,
+as we are running a (new) local network that does not connect to the public networks.
 
 Next, the script modifies genesis parameters for a developer-friendly local chain:
 - Governance voting period: 10 seconds (instead of days)
@@ -122,7 +124,7 @@ When you see "Setup done!", the chain is ready to start.
 ## Configure RPC endpoint
 
 Before starting the node, we need to configure it to accept external connections.
-By default, the RPC server only listens on localhost within the container.
+By default, the RPC server only listens on `localhost` within the container.
 We need to change this to allow connections from the host machine.
 
 Edit the configuration file:
@@ -131,7 +133,7 @@ Edit the configuration file:
 vim ~/.injectived/config/config.toml
 ```
 
-Find the `[rpc]` section and change:
+Find the `[rpc]` section and change the DNS from `127.0.0.1` to `0.0.0.0`:
 
 ```toml
 laddr = "tcp://127.0.0.1:26657"
