@@ -100,6 +100,8 @@ async function main() {
     fetchMarketsWithDetails().then((markets) => {
       console.log(JSON.stringify(markets, null, 2))
     })
+    const market = await indexerSpotApi.fetchMarket('0x0611780ba69656949525013d947713300f56c37b6175e02f26bffa495c3208fe')
+console.log('Min notional of INJ/USDT market:', market.minNotional)
 }
 main().catch((e) => {
     console.error('Unhandled error:', e);

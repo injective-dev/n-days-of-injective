@@ -28,13 +28,17 @@ npm install
 ```
 
 We will need to set up a `.env` file here too.
-Create one with your private key and sender address.
+Create one with your private key and Injective address.
 
 ```shell
 cp .env.sample .env
 ```
 
-Fill in the empty values within `.env`.
+Open the `.env` file and fill in the following values:
+- `PRIVATE`: Your wallet's private key (without 0x prefix)
+- `INJECTIVE_ADDRESS`: Your Injective address (starts with `inj`)
+
+You can get these from your wallet (e.g., Keplr or Metamask).
 
 > **Note**  
 > Do not commit `.env`, or push to remote
@@ -55,7 +59,9 @@ npx tsx src/fetch.ts
 ```
 
 The output displays detailed information about available markets:
+Because USDT has 6 decimals, so notional is 1 USDT
 ```bash
+Min notional of INJ/USDT market: 1000000
 [
   {
     "marketId": "0x0611780ba69656949525013d947713300f56c37b6175e02f26bffa495c3208fe",
@@ -142,7 +148,14 @@ Each market contains several critical parameters:
 - `minPriceTickSize` and `minQuantityTickSize`: Minimum order increments
 - `priceTensMultiplier` and `quantityTensMultiplier`: Precision adjustments for chain formatting. These multipliers are essential for converting human-readable prices to chain-compatible formats.
 
-These multipliers are essential for converting human-readable prices to chain-compatible formats.
+To query the minimum order notional for a market, you can use the SDK to fetch market details:
+
+```typescript
+const market = await indexerSpotApi.fetchMarket('0x0611780ba69656949525013d947713300f56c37b6175e02f26bffa495c3208fe')
+console.log('Min notional:', market.minNotional)
+```
+
+The notional value is calculated as `price × quantity` and must meet the minimum requirement (typically 1 USDT).
 
 ## Spot limit orders
 
@@ -297,7 +310,85 @@ Transaction result: {
 
 A successful transaction returns a `txHash` that can be viewed on the block explorer.
 The `code: 0` indicates success, while any other code indicates an error.
-You can track your transaction at `https://testnet.explorer.injective.network`.
+You can track your transaction at [https://testnet.explorer.injective.network](https://testnet.explorer.injective.network).
+
+Open the transaction in the explorer and examine the details.
+Key fields to look for:
+- **Status**: Shows if the transaction was successful
+- **Transaction Hash**: Unique identifier for this transaction
+- **Block Height**: Which block included this transaction
+- **Gas Used**: How much gas was consumed
+- **Messages**: The actual order creation message with price, quantity, and order type
+
+### Query order status
+
+After placing an order, you can query its status to see if it's been matched or is still on the orderbook:
+
+```shell
+# Query spot orders for your subaccount
+npx tsx -e "
+import { IndexerGrpcSpotApi, getDefaultSubaccountId } from '@injectivelabs/sdk-ts';
+import { getNetworkEndpoints, Network } from '@injectivelabs/networks';
+
+const endpoints = getNetworkEndpoints(Network.Testnet);
+const indexerSpotApi = new IndexerGrpcSpotApi(endpoints.indexer);
+
+// Replace with your address
+const injectiveAddress = 'YOUR_INJECTIVE_ADDRESS';
+const marketId = '0x0611780ba69656949525013d947713300f56c37b6175e02f26bffa495c3208fe';
+const subaccountId = getDefaultSubaccountId(injectiveAddress)
+
+indexerSpotApi.fetchOrders({
+  marketId,
+  subaccountId: subaccountId,
+}).then(orders => {
+  console.log('Active orders:', orders.orders);
+  orders.orders.forEach(order => {
+    console.log('Order:', {
+      orderHash: order.orderHash,
+      price: order.price,
+      quantity: order.quantity,
+      filledQuantity: order.filledQuantity,
+      state: order.state
+    });
+  });
+});
+"
+```
+
+Order states include:
+- `booked`: Order is on the orderbook waiting to be filled
+- `partial_filled`: Order has been partially matched
+- `filled`: Order has been completely matched
+- `canceled`: Order was canceled
+
+To see settlement details for filled orders, query trade history:
+
+```shell
+npx tsx -e "
+import { IndexerGrpcSpotApi, getDefaultSubaccountId } from '@injectivelabs/sdk-ts';
+import { getNetworkEndpoints, Network } from '@injectivelabs/networks';
+
+const endpoints = getNetworkEndpoints(Network.Testnet);
+const indexerSpotApi = new IndexerGrpcSpotApi(endpoints.indexer);
+
+const marketId = '0x0611780ba69656949525013d947713300f56c37b6175e02f26bffa495c3208fe';
+const injectiveAddress = 'YOUR_INJECTIVE_ADDRESS';
+const subaccountId = getDefaultSubaccountId(injectiveAddress)
+
+indexerSpotApi.fetchTrades({ marketId, subaccountId }).then(trades => {
+  console.log('Recent trades:', trades.trades);
+  trades.trades.forEach(trade => {
+    console.log('Trade:', {
+      price: trade.price,
+      quantity: trade.quantity,
+      fee: trade.fee,
+      executedAt: trade.executedAt
+    });
+  });
+});
+"
+```
 
 ### Understanding order notional
 
@@ -323,14 +414,14 @@ Similarly, a buy order priced too low won't fill until the market drops to that 
 Now let's place a buy order instead.
 The only change needed is the `orderType` parameter in `makeMsgCreateSpotLimitOrder`.
 
-Edit `src/placeorder.ts` and change the order type from `2` (sell) to `1` (buy):
+Edit `src/placeorder.ts` and change the order type from `1` (buy) to `2` (sell):
 
 ```typescript
 const placeOrderMsg = makeMsgCreateSpotLimitOrder(
     (bestAsk * multiplier).toString(),  // price of the asset
     "0.1",    // how much to buy/sell
-    1,    // orderType (1 for Buy, 2 for Sell)
-    SENDER,
+    2,    // orderType (1 for Buy, 2 for Sell)
+    INJECTIVE_ADDRESS,
     {
         marketId: '0x0611780ba69656949525013d947713300f56c37b6175e02f26bffa495c3208fe', // Example marketId
         baseDecimals: 18,
@@ -341,14 +432,23 @@ const placeOrderMsg = makeMsgCreateSpotLimitOrder(
 );
 ```
 
-Run the script again to place your buy order:
+Run the script again to place your sell order:
 
 ```bash
 npx tsx src/placeorder.ts
 ```
 
-The transaction response will be similar to the sell order.
-Check the block explorer to verify your order was placed successfully.
+The transaction response will be similar to the buy order.
+
+Open the transaction in the [explorer](https://testnet.explorer.injective.network) to verify your order was placed successfully.
+You should see the sell order with `orderType: 2` in the transaction details.
+
+Query the order status to check if it's been matched:
+
+```shell
+# Use the query commands from the previous section
+# Look for your order in the active orders list
+```
 
 ## Get market price (demo)
 

@@ -12,16 +12,16 @@ async function main() {
 
     dotenv.config();
     // ----- Config / env -----
-    const PRIAVTE = process.env.PRIVATE || '<YOUR_PRIVATE_KEY>';
-    const SENDER = process.env.SENDER || '<SENDER_ADDRESS_HERE>';
+    const PRIVATE = process.env.PRIVATE || '<YOUR_PRIVATE_KEY>';
+    const INJECTIVE_ADDRESS = process.env.INJECTIVE_ADDRESS || '<YOUR_INJECTIVE_ADDRESS>';
     // ------------------------
-    console.log('From address:', SENDER);
+    console.log('From address:', INJECTIVE_ADDRESS);
 
     const placeOrderMsg = makeMsgCreateSpotLimitOrder(
         (bestAsk * multiplier).toString(),  // price of the asset
         "0.1",    // how much to buy/sell
         1,    // orderType (1 for Buy, 2 for Sell)
-        SENDER,
+        INJECTIVE_ADDRESS,
         {
             marketId: '0x0611780ba69656949525013d947713300f56c37b6175e02f26bffa495c3208fe', // Example marketId
             baseDecimals: 18,
@@ -32,7 +32,7 @@ async function main() {
     );
     console.log('Place Order Msg:', placeOrderMsg);
     const txHash = await new MsgBroadcasterWithPk({
-        privateKey: PRIAVTE,
+        privateKey: PRIVATE,
         network: Network.TestnetK8s,
     }).broadcast({
         msgs: [placeOrderMsg]
