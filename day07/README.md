@@ -139,7 +139,7 @@ Find the `[rpc]` section and change the DNS from `127.0.0.1` to `0.0.0.0`:
 laddr = "tcp://127.0.0.1:26657"
 ```
 
-To:
+It should now look like this:
 
 ```toml
 laddr = "tcp://0.0.0.0:26657"
