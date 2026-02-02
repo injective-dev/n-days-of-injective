@@ -7,9 +7,9 @@ shopt -s expand_aliases
 killall injectived &>/dev/null || true
 rm -rf ~/.injectived
 
-unalias -a 'injectived'
+unalias 'injectived' 2>/dev/null || true
 INJECTIVED="docker run -it --rm -v $HOME/.injectived:/root/.injectived injectivelabs/injective-core:v1.17.1 injectived --home /root/.injectived"
-alias injectived=${INJECTIVED}
+alias injectived="${INJECTIVED}"
 CHAINID="injective-1000"
 MONIKER="injective"
 KEYRING_BACKEND="test"
