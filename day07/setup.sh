@@ -16,7 +16,7 @@ KEYRING_BACKEND="test"
 FEEDADMIN="inj1k2z3chspuk9wsufle69svmtmnlc07rvw9djya7"
 
 # Set moniker and chain-id for Ethermint (Moniker can be anything, chain-id must be an integer)
-injectived init $MONIKER --chain-id $CHAINID
+$INJECTIVED init $MONIKER --chain-id $CHAINID
 perl -i -pe 's/^timeout_commit = ".*?"/timeout_commit = "2500ms"/' $HOME/.injectived/config/config.toml
 perl -i -pe 's/^minimum-gas-prices = ".*?"/minimum-gas-prices = "1inj"/' $HOME/.injectived/config/app.toml
 
