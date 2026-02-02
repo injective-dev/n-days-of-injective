@@ -140,7 +140,7 @@ Each market contains several critical parameters:
 - `ticker`: Human-readable market name (e.g., "INJ/USDT")
 - `baseDecimals` and `quoteDecimals`: Token precision
 - `minPriceTickSize` and `minQuantityTickSize`: Minimum order increments
-- `priceTensMultiplier` and `quantityTensMultiplier`: Precision adjustments for chain formatting
+- `priceTensMultiplier` and `quantityTensMultiplier`: Precision adjustments for chain formatting. These multipliers are essential for converting human-readable prices to chain-compatible formats.
 
 These multipliers are essential for converting human-readable prices to chain-compatible formats.
 
