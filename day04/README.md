@@ -227,7 +227,7 @@ But the actual transfer of units of the fungible token
 occurs as a Bank module action within in the Injective node.
 EVM in this case, provides the interface, but not the implementation.
 
-## Check MTS balances (demo)
+## Check MTS balances - for EVM ERC20 (demo)
 
 Finally, let's check the transfer transaction via the block explorer.
 Let's query the `balanceOf` function for both wallets.
@@ -236,6 +236,26 @@ Next `balanceOf` for the other wallet of the recipient.
 Observe that our balance has decreased, and the recipient's balance has increased.
 We've successfully used an EVM ERC20 and Cosmos Denom simultaneously,
 without actually bridging, wrapping etc.
+
+## Check MTS balances - for Cosmos Denom (demo)
+
+At this point, we have tested that MTS token that was deployed on EVM works in EVM.
+However, MTS is supposed to be MultiVM remember?
+Let's **prove** that it is by looking at the same token on InjScan,
+which is a another block explorer for Injective,
+that is also Cosmos-aware.
+
+Visit [testnet.explorer.injective.network](https://testnet.explorer.injective.network/).
+
+In the search bar, paste the EVM address of your MTS token,
+e.g. `0x862e252845c3d868ce1d531507748ac5c377c10b`.
+
+This will automatically be converted to the bech32 format address,
+and redirect you to the page for the smart contract, e.g.:
+`https://testnet.explorer.injective.network/account/inj1schz22z9c0vx3nsa2v2sway2chph0sgtml538n/`.
+
+Then click on the "Transactions" tab, and you should see the first transaction,
+the initial mint of the MTS token, e.g. `1,000,000BGZ_MTS` in the "Amount" column.
 
 ## Complete!
 
