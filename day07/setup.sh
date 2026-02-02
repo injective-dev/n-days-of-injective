@@ -7,15 +7,16 @@ shopt -s expand_aliases
 killall injectived &>/dev/null || true
 rm -rf ~/.injectived
 
-alias injectived='docker run -it --rm -v ~/.injectived:/root/.injectived injectivelabs/injective-core:v1.17.1 injectived --home /root/.injectived'
+unalias -a 'injectived'
 INJECTIVED="docker run -it --rm -v $HOME/.injectived:/root/.injectived injectivelabs/injective-core:v1.17.1 injectived --home /root/.injectived"
+alias injectived=${INJECTIVED}
 CHAINID="injective-1000"
 MONIKER="injective"
 KEYRING_BACKEND="test"
 FEEDADMIN="inj1k2z3chspuk9wsufle69svmtmnlc07rvw9djya7"
 
 # Set moniker and chain-id for Ethermint (Moniker can be anything, chain-id must be an integer)
-injectived init $MONIKER --chain-id $CHAINID
+$INJECTIVED init $MONIKER --chain-id $CHAINID
 perl -i -pe 's/^timeout_commit = ".*?"/timeout_commit = "2500ms"/' $HOME/.injectived/config/config.toml
 perl -i -pe 's/^minimum-gas-prices = ".*?"/minimum-gas-prices = "1inj"/' $HOME/.injectived/config/app.toml
 
