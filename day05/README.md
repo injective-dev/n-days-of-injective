@@ -6,8 +6,8 @@ This project is designed to demonstrate how to interact with **Injective Protoco
 
 ## What You Will Find Here
 
-- **injectived CLI usage**: Examples of querying account balances, sending INJ tokens, and interacting with the Injective chain via the command line.
-- **Injective SDK examples**: TypeScript scripts using `@injectivelabs/sdk-ts`
+- **[injectived CLI usage](./injectived/)**: Examples of querying account balances, sending INJ tokens, and interacting with the Injective chain via the command line.
+- **[Injective SDK examples](./sdk/)**: TypeScript scripts using `@injectivelabs/sdk-ts`
 
 
 ## Getting Started

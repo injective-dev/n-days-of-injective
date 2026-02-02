@@ -62,13 +62,7 @@ alias injectived='docker run -it --rm -v ~/.injectived:/root/.injectived injecti
 > To make it permanent or available from other shells,
 > add it to your `.bashrc`, `.zshrc`, or equivalent files.
 
-## Build from source
-
-```bash
-git clone https://github.com/InjectiveFoundation/injective-core.git
-cd injective-core && git checkout v1.17.1
-make install
-```
+For other installation methods (pre-built binaries or building from source), see the [official documentation](https://docs.injective.network/guides/installation/).
 
 ## Check installation
 
@@ -143,6 +137,8 @@ balances:
 pagination:
   total: "2"
 ```
+
+You can verify the balance by checking the address in the [Testnet Explorer](https://testnet.explorer.injective.network/). Simply search for your address (e.g., `inj15e3nfrzegpajr0ezvscfqncm45ujfqq0r2u893`) to view the balance and transaction history in the browser.
 
 > **Note**  
 > The `--node` and `--chain-id` flags are for Injective Testnet
