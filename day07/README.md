@@ -58,10 +58,9 @@ Let's break down what happens during setup.
 
 ## Genesis configuration (demo)
 
-The script begins by setting up the Docker alias and initializing the chain.
+The setup script begins by initializing the chain.
 
 ```shell
-alias injectived='docker run -it --rm -v ~/.injectived:/root/.injectived injectivelabs/injective-core:v1.17.1 injectived --home /root/.injectived'
 injectived init injective --chain-id injective-1000
 ```
 
@@ -103,11 +102,14 @@ This ensures we have plenty of tokens for testing transactions and smart contrac
 
 ## Running the setup script (demo)
 
+> **Warning**: The setup script will delete the contents of `~/.injectived` directory.
+> If you have other instances of injectived running and need to keep that data, make a backup first.
+> The script starts with `rm -rf ~/.injectived` to ensure a clean setup.
+
 Time for a demo.
-Make the script executable and run it:
+Run the setup script:
 
 ```shell
-chmod +x setup.sh
 ./setup.sh
 ```
 
@@ -175,11 +177,12 @@ First, set up an alias for the dockerized injectived command:
 alias injectived='docker run -it --rm -v ~/.injectived:/root/.injectived injectivelabs/injective-core:v1.17.1 injectived --home /root/.injectived'
 ```
 
-Now let's query the balance of one of our genesis accounts:
+Now let's query the balance of one of our genesis accounts.
+Replace `${YOUR_INJ_PREFIX_ADDR}` with an actual address:
 
 ```shell
 injectived query bank balances \
-   ${YOUR_INJ_PREFIX_ADDR}}$ \
+   ${YOUR_INJ_PREFIX_ADDR} \
    --chain-id injective-1000 --node "http://host.docker.internal:26657"
 ```
 
@@ -187,15 +190,24 @@ Notice the `--node` flag specifies how to connect to our local node.
 The special hostname `host.docker.internal` allows Docker containers to access the host machine.
 This is necessary because we're running the query from within a container.
 
-The output should show the balances for this account:
+For example, query the feed admin account which was funded during genesis:
+
+```shell
+injectived query bank balances \
+   inj1k2z3chspuk9wsufle69svmtmnlc07rvw9djya7 \
+   --chain-id injective-1000 --node "http://host.docker.internal:26657"
+```
+
+This should show a non-zero balance:
 
 ```
-balances: []
-pagination: {}
+balances:
+- amount: "100000000000000000000000000"
+  denom: inj
+pagination:
+  next_key: null
+  total: "0"
 ```
-
-Initially, it might be empty if this particular address wasn't funded in genesis.
-Try querying the genesis account address instead, which should show large balances.
 
 ## Verifying the setup
 
@@ -258,5 +270,28 @@ You now know how to:
 
 With a local node running, you have a powerful development environment.
 You can deploy smart contracts, test SDK applications, and experiment with Injective features without needing testnet access.
+
+## Stopping the node
+
+When you're done with your local node, you can stop it in several ways.
+
+If the node is running in the foreground (in your terminal), press `Ctrl+C` to stop it.
+
+If you need to stop a Docker container running in the background:
+
+```shell
+# List running Docker containers
+docker ps
+
+# Find the container ID for injectivelabs/injective-core
+# Then stop it
+docker stop <container_id>
+```
+
+Alternatively, you can stop all running injectived containers:
+
+```shell
+docker stop $(docker ps -q --filter ancestor=injectivelabs/injective-core:v1.17.1)
+```
 
 For advanced configuration and production deployments, refer to the official Injective documentation at https://docs.injective.network/infra/join-a-network.
