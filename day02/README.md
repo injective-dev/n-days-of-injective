@@ -258,6 +258,7 @@ Run the verification command.
 This sends our source code and compiler settings to the explorer.
 
 ```shell
+SMART_CONTRACT_ADDRESS="(paste value from deploy command here)"
 npx hardhat verify --network inj_testnet ${SMART_CONTRACT_ADDRESS}
 ```
 
@@ -312,8 +313,9 @@ First, connect to the smart contract.
 This instantiates an object named `counter`.
 
 ```javascript
+const smartContractAddress = '(paste value from deploy command here)';
 const Counter = await ethers.getContractFactory('Counter');
-const counter = await Counter.attach('${SMART_CONTRACT_ADDRESS}');
+const counter = await Counter.attach(smartContractAddress.toLowerCase());
 ```
 
 > Replace `${SMART_CONTRACT_ADDRESS}` in the command above
@@ -347,7 +349,8 @@ invoke a different function on the `counter` object.
 This time it will be the `increment` function.
 
 ```javascript
-await counter.increment(1, { gasPrice: 160e6, gasLimit: 2e6 });
+const txResponse = await counter.increment(1, { gasPrice: 160e6, gasLimit: 2e6 });
+txResponse.hash;
 ```
 
 Notice we specified a gas details -
