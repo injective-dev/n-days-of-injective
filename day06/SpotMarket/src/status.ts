@@ -7,7 +7,7 @@ const indexerSpotApi = new IndexerGrpcSpotApi(endpoints.indexer);
 // Replace with your address
 const injectiveAddress = 'YOUR_INJ_ADDRESS_HERE';
 const marketId = '0x0611780ba69656949525013d947713300f56c37b6175e02f26bffa495c3208fe';
-const subaccountId = getDefaultSubaccountId(injectiveAddress)
+const subaccountId = getDefaultSubaccountId(injectiveAddress);
 
 
 async function main() {
@@ -41,6 +41,7 @@ async function main() {
 
 
 }
+
 main().catch((e) => {
     console.error('Unhandled error:', e);
     process.exit(1);
