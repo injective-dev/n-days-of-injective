@@ -322,72 +322,54 @@ Key fields to look for:
 
 ### Query order status
 
-After placing an order, you can query its status to see if it's been matched or is still on the orderbook:
+After placing an order, you can query its status to see if it's been matched or is still on the orderbook.
 
-```shell
-# Query spot orders for your subaccount
-npx tsx -e "
-import { IndexerGrpcSpotApi, getDefaultSubaccountId } from '@injectivelabs/sdk-ts';
-import { getNetworkEndpoints, Network } from '@injectivelabs/networks';
+First, update `src/status.ts` with your Injective address:
 
-const endpoints = getNetworkEndpoints(Network.Testnet);
-const indexerSpotApi = new IndexerGrpcSpotApi(endpoints.indexer);
-
-// Replace with your address
-const injectiveAddress = 'YOUR_INJECTIVE_ADDRESS';
-const marketId = '0x0611780ba69656949525013d947713300f56c37b6175e02f26bffa495c3208fe';
-const subaccountId = getDefaultSubaccountId(injectiveAddress)
-
-indexerSpotApi.fetchOrders({
-  marketId,
-  subaccountId: subaccountId,
-}).then(orders => {
-  console.log('Active orders:', orders.orders);
-  orders.orders.forEach(order => {
-    console.log('Order:', {
-      orderHash: order.orderHash,
-      price: order.price,
-      quantity: order.quantity,
-      filledQuantity: order.filledQuantity,
-      state: order.state
-    });
-  });
-});
-"
+```typescript
+const injectiveAddress = 'YOUR_INJ_ADDRESS_HERE'; // Replace with your address
 ```
 
-Order states include:
-- `booked`: Order is on the orderbook waiting to be filled
-- `partial_filled`: Order has been partially matched
-- `filled`: Order has been completely matched
-- `canceled`: Order was canceled
-
-To see settlement details for filled orders, query trade history:
+Then run the script:
 
 ```shell
-npx tsx -e "
-import { IndexerGrpcSpotApi, getDefaultSubaccountId } from '@injectivelabs/sdk-ts';
-import { getNetworkEndpoints, Network } from '@injectivelabs/networks';
+npx tsx src/status.ts
+```
 
-const endpoints = getNetworkEndpoints(Network.Testnet);
-const indexerSpotApi = new IndexerGrpcSpotApi(endpoints.indexer);
+The script will display:
+- **Active orders**: All open orders on the orderbook for your subaccount, showing:
+  - `orderHash`: Unique identifier for the order
+  - `price`: Order price
+  - `quantity`: Total order quantity
+  - `unfilledQuantity`: Amount remaining to be filled
+  - `state`: Order status (e.g., "booked", "partial_filled", "filled", "canceled")
 
-const marketId = '0x0611780ba69656949525013d947713300f56c37b6175e02f26bffa495c3208fe';
-const injectiveAddress = 'YOUR_INJECTIVE_ADDRESS';
-const subaccountId = getDefaultSubaccountId(injectiveAddress)
+- **Recent trades**: Your executed trades for this market, showing:
+  - `price`: Execution price
+  - `quantity`: Trade size
+  - `fee`: Trading fee paid
+  - `executedAt`: Timestamp of execution
 
-indexerSpotApi.fetchTrades({ marketId, subaccountId }).then(trades => {
-  console.log('Recent trades:', trades.trades);
-  trades.trades.forEach(trade => {
-    console.log('Trade:', {
-      price: trade.price,
-      quantity: trade.quantity,
-      fee: trade.fee,
-      executedAt: trade.executedAt
-    });
-  });
-});
-"
+Example output:
+
+```bash
+Active orders: [
+  {
+    orderHash: '0x...',
+    price: '25.5',
+    quantity: '0.1',
+    unfilledQuantity: '0.1',
+    state: 'booked'
+  }
+]
+Recent trades: [
+  {
+    price: '25.4',
+    quantity: '0.05',
+    fee: '0.001',
+    executedAt: 1738567890123
+  }
+]
 ```
 
 ### Understanding order notional
