@@ -50,7 +50,7 @@ btnWrite.addEventListener('click', async (_event) => {
         address: stateSmartContract.address,
         abi: stateSmartContract.abi,
         functionName: 'increment',
-        args: [2n],
+        args: [100n],
         account: stateWallet.address,
     });
     const blockExplorerUrl = `https://testnet.blockscout.injective.network/tx/${hash}`;

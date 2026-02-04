@@ -68,12 +68,12 @@ Edit the `.env` file, which will start off looking like this:
 ```text
 PORT=3690
 RPC_URL=https://k8s.testnet.json-rpc.injective.network/
+SC_ABI=counter.abi.json
 SC_ADDRESS=
-SC_ABI=
+
 ```
 
-Set the value of `SC_ABI` to `counter.abi.json`
-(the file you have just copied into the `public` directory.)
+Note that `SC_ABI` references the file that we just copied.
 
 Copy-paste the smart contract deployed address from day 2 (smart contracts) as the `SC_ADDRESS` value.
 
@@ -89,6 +89,20 @@ The last step before you can run the project is to install the dependencies:
 ```shell
 npm install
 ```
+
+Next, we'll run this command
+
+```shell
+npm start
+```
+
+You will see output that includes the following:
+
+```text
+Server running at http://localhost:3690
+```
+
+Visit this address in the browser and view our dApp.
 
 ## Inject web3 provider (demo)
 
@@ -110,6 +124,27 @@ client = createWalletClient({
     chain: injectiveTestnet,
     transport: custom(window.ethereum),
 }).extend(publicActions);
+```
+
+Now in the dApp, press the "Wallet" button.
+If this is your first time interacting with this dApp,
+MetaMask will ask you for permission to connect.
+
+If you decline the connection request, or have not set up MetaMask properly,
+you will see an error, something along the lines of:
+
+```text
+Error: unable to obtain account details
+```
+
+This is a security feature, where EVM wallets
+block any interaction requests made by dApps,
+unless the user first gives the go ahead.
+
+If the wallet is set up properly
+
+```text
+Connected to wallet, with account address: 0xcaCd797be17138a9986B3FE3a5BD0598cA1b980c
 ```
 
 ## Connect to smart contract
@@ -170,6 +205,16 @@ const result = await stateWallet.client.readContract({
 });
 ```
 
+In the dApp, press the "Read" button.
+After about a second, you should see text similar to this appear:
+
+```text
+Result: 300
+```
+
+This is a number that was retrieved from the smart contract query.
+Next we will update the state of the smart contract using a transaction.
+
 ## Update user interface (demo)
 
 Now for the 'Increment' button.
@@ -193,10 +238,49 @@ const hash = await stateWallet.client.writeContract({
     address: stateSmartContract.address,
     abi: stateSmartContract.abi,
     functionName: 'increment',
-    args: [2n],
+    args: [100n],
     account: stateWallet.address,
 });
 ```
+
+The above invokes `Counter.increment(100)`.
+
+In the dApp, press the "Write" button.
+
+MetaMask will prompt us with a "Transaction request",
+and ask you to select "Cancel" or "Confirm".
+
+In the top, find the "triple slider" icon, and click that to toggle on details.
+In the "Data" pane that appears, it should show the following:
+
+- Function: increment
+- Param #1: 100
+
+That cooresponds to what we're expecting.
+Press the "Confirm" button.
+
+In MetaMask, you should see a transaction appear with a status of "Pending".
+This will change to "Confirmed" in a moment.
+
+You should also see text similar to this appear in the dApp:
+
+```text
+Transaction submitted: 0x0219a2fa12...
+```
+
+That `0x...` is the transaction hash.
+Open the link of the transaction hash in a new browser tab
+to view the transaction details in the block explorer.
+
+Back in the dApp, press the "Read" button a second time.
+After about a second, you should see text similar to this appear:
+
+```text
+Result: 400
+```
+
+This is the new number that was retrieved from the smart contract query.
+Because of the transaction we just did, it has a new value.
 
 ## Read and write operations
 
