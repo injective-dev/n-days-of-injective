@@ -10,7 +10,7 @@ async function deploy(name, constructorArgs, deployTxOptions) {
         await smartContractInstance.getAddress();
 
     console.log(
-        `Smart contract deployed: ${smartContractAddress} - ${name}\n    https://testnet.blockscout.injective.network/address/${smartContractAddress}?tab=contract`,
+        `Smart contract deployed: ${smartContractAddress} - ${name}\n    https://testnet.blockscout.injective.network/address/${smartContractAddress}?tab=contract\n    https://testnet.explorer.injective.network/asset/erc20:${smartContractAddress}`,
     );
 }
 

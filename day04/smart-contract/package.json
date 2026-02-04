@@ -17,9 +17,9 @@
   "author": "bguiz",
   "license": "MIT",
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "6.0.0",
+    "@nomicfoundation/hardhat-toolbox": "6.1.0",
     "dotenv": "17.0.1",
-    "hardhat": "2.25.0"
+    "hardhat": "2.28.4"
   },
   "dependencies": {
     "@openzeppelin/contracts": "5.4.0"

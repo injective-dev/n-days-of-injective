@@ -53,10 +53,18 @@ that is far more generous, dispensing 10INJ at a time.
 To use that, we need to be signed in - that's their DDOS protection.
 From the Injective Faucet, copy our wallet's address -
 the one that starts with `inj...` -
-and paste it into Google's Injective Testnet Faucet.
+and paste it into [Google's Injective Testnet Faucet](https://cloud.google.com/application/web3/faucet/injective/testnet).
+
 Press then button, and wait for the transaction to come through.
 Check our wallet.
 We should now have more than enough for an MTS deployment.
+
+> Note that while this faucet is more generous,
+> it is still rate limited, and you may see an error message like this:
+>
+> ```text
+> Each Google Account and wallet address gets one drip on Testnet every 1 day. Try again after Feb 2, 2026, 3:17:18 PM.
+> ```
 
 ## EVM precompiles
 
@@ -98,6 +106,8 @@ But it also includes functions for native capabilities like minting, burning, an
 By invoking this EVM precompile, we are instructing the chain's native Bank module to operate on the underlying asset.
 Any change in the underlying asset is reflected instantly in *both* the EVM ERC20 and the Cosmos Denom.
 
+Open `contracts/Bank.sol` to see the `IBankModule` interface definition.
+
 ```solidity
 interface IBankModule {
    function mint(address,uint256) external payable returns (bool);
@@ -117,6 +127,8 @@ We'll use the canonical `BankERC20` implementation.
 This base contract handles the connection to the Bank precompile.
 At the same time it also extends OpenZeppelin's ERC20 implementation.
 It initialises the interface at the precompile address.
+
+Open `contracts/BankERC20.sol` to see the `BankERC20` smart contract implementation.
 
 ```solidity
    address constant bankContract = 0x0000000000000000000000000000000000000064;
@@ -162,6 +174,8 @@ And it routes balance related updates, like transfer/ mint/ burn, through to the
 
 To make our own MTS token, we just extend this contract.
 It's that simple.
+
+Open `contracts/MyMtsToken.sol` to see the `MyMtsToken` smart contract implementation.
 
 ```solidity
 contract MyMtsToken is BankERC20 {
@@ -213,14 +227,44 @@ Then the deployment command, which will pick up the values that we have set in t
 npx hardhat run script/deploy.js --network inj_testnet
 ```
 
+We should see output for the deployment similar to the following:
+
+```text
+Smart contract deployed: 0x2F503565a20B6F3B5109C81A76eea6bBcB442272 - MyMtsToken
+    https://testnet.blockscout.injective.network/address/0x2F503565a20B6F3B5109C81A76eea6bBcB442272?tab=contract
+    https://testnet.explorer.injective.network/asset/erc20:0x2F503565a20B6F3B5109C81A76eea6bBcB442272
+Deployment script executed successfully.
+```
+
 Finally, verify the MTS token.
 
 ```shell
-npx hardhat verify --constructor-args ./script/constructor-args-mymtstoken.js --network inj_testnet ${SMART_CONTRACT_ADDRESS}
+npx hardhat verify --force --constructor-args ./script/constructor-args-mymtstoken.js --network inj_testnet ${SMART_CONTRACT_ADDRESS}
+```
+
+We should see output for the verification similar to the following:
+
+```text
+Successfully submitted source code for contract
+contracts/MyMtsToken.sol:MyMtsToken at 0xF19484802B9446af98fd2d37189e2EEC9B7F6c62
+for verification on the block explorer. Waiting for verification result...
+
+Successfully verified contract MyMtsToken on the block explorer.
+https://testnet.blockscout.injective.network/address/0xF19484802B9446af98fd2d37189e2EEC9B7F6c62#code
 ```
 
 Going back to the deployment, let's grab the address and add it to our Metamask wallet.
+
+- Click on the "Tokens" tab
+- Only 1 asset is currently listed (INJ)
+- Click on the "triple dot" icon
+- Select "Import tokens"
+- Paste the smart contract deployed address into "Token contract address"
+- Click "Next"
+- You should see 2 assets listed (INJ and our MTS token)
+
 We can see it behaves exactly like a standard EVM ERC20 token would, within Metamask.
+
 Now, let's transfer some tokens to another wallet.
 This transaction is signed by Metamask, and processed by the EVM.
 But the actual transfer of units of the fungible token
@@ -255,7 +299,7 @@ and redirect you to the page for the smart contract, e.g.:
 `https://testnet.explorer.injective.network/account/inj1schz22z9c0vx3nsa2v2sway2chph0sgtml538n/`.
 
 Then click on the "Transactions" tab, and you should see the first transaction,
-the initial mint of the MTS token, e.g. `1,000,000BGZ_MTS` in the "Amount" column.
+the initial mint of the MTS token, e.g. `1,000,000 BGZ_MTS` in the "Amount" column.
 
 ## Complete!
 
